@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!--
+  materials.xacro
+
+  Shared Gazebo/RViz material definitions for the ZEKO robot.
+  Centralizing colors here avoids duplicating <material> blocks across
+  base.xacro, wheels.xacro, casters.xacro, support_frame.xacro and
+  pelvis_mount.xacro.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <material name="zeko_chassis_grey">
+    <color rgba="0.30 0.30 0.32 1.0"/>
+  </material>
+
+  <material name="zeko_wheel_black">
+    <color rgba="0.05 0.05 0.05 1.0"/>
+  </material>
+
+  <material name="zeko_caster_dark_grey">
+    <color rgba="0.15 0.15 0.15 1.0"/>
+  </material>
+
+  <material name="zeko_frame_silver">
+    <color rgba="0.75 0.76 0.78 1.0"/>
+  </material>
+
+  <material name="zeko_pelvis_blue">
+    <color rgba="0.10 0.35 0.75 1.0"/>
+  </material>
+
+</robot>

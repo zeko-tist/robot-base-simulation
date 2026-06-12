@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+<!--
+  base.xacro
+
+  Defines:
+    - The CAD->ROS axis remap constant `cad_yaw` (see below).
+    - Shared inertia helper macros (box / cylinder / sphere) used by every
+      other *.xacro file in this package.
+    - base_link: the main chassis of ZEKO.
+
+  =====================================================================
+  SOURCE DATA AND COORDINATE REMAPPING
+  =====================================================================
+  This revision is built from the REAL Fusion 360 export contained in
+  zeko_base.f3d (meshes + an auto-generated zeko.urdf with computed mass
+  properties). All dimensions, masses and inertias below come directly
+  from that export.
+
+  The Fusion export's mesh files store vertex coordinates in the CAD
+  assembly's own world frame (CAD_X, CAD_Y, CAD_Z), where the two drive
+  wheels sit at CAD_X = +-0.300 m and rotate about axis (+-1, 0, 0)
+  (i.e. CAD_X is the wheel-separation / left-right axis), and the front
+  and rear casters sit at CAD_Y = +-0.450 m (CAD_Y is the
+  forward/backward axis). CAD_Z is already "up".
+
+  To satisfy the required X = forward, Y = left, Z = up convention, every
+  link in this package applies a fixed -90 deg rotation about Z
+  (cad_yaw) to its visual/collision mesh, mapping:
+
+      ROS_X =  CAD_Y   (forward)
+      ROS_Y = -CAD_X   (left)
+      ROS_Z =  CAD_Z   (up)
+
+  For each link, a single CAD-frame anchor point P_cad is chosen as that
+  link's origin. The corresponding mesh <origin> is then:
+
+      rpy = "0 0 cad_yaw"                         (cad_yaw = -pi/2)
+      xyz = (-P_cad.y, P_cad.x, -P_cad.z)
+
+  which places the mesh (whose raw vertices are absolute CAD-frame
+  coordinates) at its correct real position, expressed in this link's
+  local ROS frame. Joint origins to parent links are simply
+  R(P_cad_child - P_cad_parent), where R is the same -90 deg rotation
+  about Z. See the comments in wheels.xacro / casters.xacro /
+  support_frame.xacro / pelvis_mount.xacro for the per-link P_cad values.
+
+  Front/rear assignment: the export contains no explicit "front" marking,
+  so the caster at CAD_Y = +0.450 (-> ROS_X = +0.450, i.e. +X/forward) is
+  designated FRONT and the caster at CAD_Y = -0.450 (-> ROS_X = -0.450)
+  is REAR. Likewise CAD_X = -0.300 (-> ROS_Y = +0.300, +Y/left) is the
+  LEFT wheel and CAD_X = +0.300 (-> ROS_Y = -0.300) is the RIGHT wheel.
+
+  Masses/inertias for base_link and the two wheels are the values Fusion
+  computed from the actual solid bodies + assigned materials. Inertia
+  tensors are diagonal in the CAD frame (cross terms ~0 or negligible);
+  a -90 deg rotation about Z swaps Ixx<->Iyy and leaves Izz unchanged,
+  which is applied below. Caster / support_frame / pelvis_mount masses
+  were NOT present in the Fusion export (only base_link + the two wheel
+  links had <inertial> data) and are estimated from their mesh bounding
+  volumes at typical aluminium/plastic densities; see README.md.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ===================================================================
+       CAD -> ROS AXIS REMAP
+       =================================================================== -->
+  <xacro:property name="cad_yaw" value="${-pi/2}"/>
+
+  <!-- ===================================================================
+       GLOBAL DIMENSION / MASS PROPERTIES (from real CAD geometry)
+       =================================================================== -->
+
+  <!-- Chassis (base_link), CAD bbox: 0.65 x 1.00 x 0.124 m, bottom face
+       at CAD_Z = 0.097 -->
+  <xacro:property name="base_length" value="1.00"/>           <!-- ROS X (= CAD Y) [m] -->
+  <xacro:property name="base_width" value="0.65"/>             <!-- ROS Y (= CAD X) [m] -->
+  <xacro:property name="base_height" value="0.124"/>           <!-- ROS Z (= CAD Z) [m] -->
+  <xacro:property name="base_bottom_z" value="0.097"/>         <!-- CAD_Z of base bottom face [m] -->
+  <xacro:property name="base_com_z" value="0.16215671974457993"/> <!-- from Fusion, relative to base_link origin -->
+  <!-- Mass/inertia: Fusion's export computed these assuming a steel
+       material (~7850 kg/m^3). The chassis is actually aluminum
+       (~2700 kg/m^3); since geometry is unchanged, mass and inertia both
+       scale linearly with density (ratio = 2700/7850 = 0.343949...).
+       Original steel values: mass=172.54117858243143,
+       ixx=5.338785 iyy=2.14656 izz=7.183393 (CAD frame). -->
+  <xacro:property name="base_mass" value="59.345373525167496"/>  <!-- [kg], aluminum-scaled -->
+  <!-- After -90 deg about Z: ROS_Ixx = CAD_Iyy, ROS_Iyy = CAD_Ixx, ROS_Izz = CAD_Izz
+       (already aluminum-scaled) -->
+  <xacro:property name="base_ixx" value="0.7383072611464968"/>
+  <xacro:property name="base_iyy" value="1.8362699999999998"/>
+  <xacro:property name="base_izz" value="2.4707211592356684"/>
+
+  <!-- Drive wheels, CAD bbox: dia ~0.3048 m (~152.4 mm radius), width 0.08 m,
+       centers at CAD_X = +-0.300, CAD_Z ~ 0.1524 -->
+  <xacro:property name="wheel_radius" value="0.1524"/>         <!-- [m] (~6 in) -->
+  <xacro:property name="wheel_width" value="0.08"/>            <!-- [m] -->
+  <xacro:property name="wheel_separation" value="0.60"/>       <!-- center-to-center [m] -->
+  <!-- Mass/inertia: Fusion's export computed these assuming a steel
+       material (~7850 kg/m^3), which produced an implausible ~94% solid
+       steel wheel (43.4 kg). The wheels are actually solid rubber/PU
+       tires (~1200 kg/m^3); since geometry is unchanged, mass and inertia
+       both scale linearly with density (ratio = 1200/7850 = 0.152866...).
+       Original steel values (per wheel): mass=43.423475312665495,
+       ixx=0.522779 iyy=0.282382 izz=0.28396 (CAD frame). -->
+  <xacro:property name="wheel_mass" value="6.637983487286445"/>  <!-- [kg], rubber-scaled (each wheel) -->
+  <!-- After -90 deg about Z: ROS_Ixx = CAD_Iyy, ROS_Iyy = CAD_Ixx (axial), ROS_Izz = CAD_Izz
+       (already rubber-scaled). Sanity check: 0.5*m*r^2 = 0.0771, matches iyy. -->
+  <xacro:property name="wheel_ixx" value="0.04316667515923567"/>
+  <xacro:property name="wheel_iyy" value="0.07991526114649682"/>          <!-- about wheel rotation axis (Y) -->
+  <xacro:property name="wheel_izz" value="0.04340789808917197"/>
+
+  <!-- Casters, CAD bbox of the caster wheel: dia 0.09 m (45 mm radius),
+       caster groups centered at CAD_Y = +-0.450 -->
+  <xacro:property name="caster_radius" value="0.045"/>         <!-- [m] -->
+  <xacro:property name="caster_x_offset" value="0.45"/>        <!-- ROS X offset from base center [m] -->
+  <!-- Estimated from bbox volumes: ~0.40 kg aluminum fork (~30% solid
+       fraction @ 2700 kg/m^3) + ~0.20 kg solid rubber wheel
+       (@ 1200 kg/m^3) = ~0.6 kg combined. -->
+  <xacro:property name="caster_mass" value="0.6"/>             <!-- [kg], estimated (aluminum fork + rubber wheel) -->
+
+  <!-- Support frame, CAD bbox: 0.268 (X) x 0.348 (Y) x 0.283 (Z),
+       bottom face at CAD_Z = 0.221 (= base_link top) -->
+  <xacro:property name="support_frame_length" value="0.348"/>  <!-- ROS X (= CAD Y) [m] -->
+  <xacro:property name="support_frame_width" value="0.268"/>   <!-- ROS Y (= CAD X) [m] -->
+  <xacro:property name="support_frame_height" value="0.283"/>  <!-- ROS Z (= CAD Z) [m] -->
+  <!-- Estimated from bbox volume (0.0264 m^3) at ~5% solid fraction
+       (open frame, not a solid block) @ 2700 kg/m^3 (aluminum). -->
+  <xacro:property name="support_frame_mass" value="3.5"/>      <!-- [kg], estimated (aluminum) -->
+
+  <!-- Pelvis mount plate, CAD bbox: 0.285 (X) x 0.225 (Y) x 0.152 (Z),
+       bottom face at CAD_Z = 0.504 (= support_frame top) -->
+  <xacro:property name="pelvis_length" value="0.225"/>         <!-- ROS X (= CAD Y) [m] -->
+  <xacro:property name="pelvis_width" value="0.285"/>          <!-- ROS Y (= CAD X) [m] -->
+  <xacro:property name="pelvis_height" value="0.152"/>         <!-- ROS Z (= CAD Z) [m] -->
+  <!-- Estimated from bbox volume (0.00976 m^3) at ~11% solid fraction
+       @ 2700 kg/m^3 (aluminum). -->
+  <xacro:property name="pelvis_mass" value="3.0"/>             <!-- [kg], estimated (aluminum) -->
+
+  <!-- ===================================================================
+       INERTIA HELPER MACROS
+       =================================================================== -->
+
+  <!-- Solid box inertia about its own center of mass -->
+  <xacro:macro name="box_inertial" params="mass x y z *origin">
+    <inertial>
+      <xacro:insert_block name="origin"/>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="${(1.0/12.0) * mass * (y*y + z*z)}" ixy="0.0" ixz="0.0"
+        iyy="${(1.0/12.0) * mass * (x*x + z*z)}" iyz="0.0"
+        izz="${(1.0/12.0) * mass * (x*x + y*y)}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- Solid cylinder inertia about its own center of mass.
+       Cylinder axis assumed along the link's local Y axis (matches the
+       wheel mounting convention used in wheels.xacro: axis = (0 1 0)). -->
+  <xacro:macro name="cylinder_inertial_y" params="mass r h *origin">
+    <inertial>
+      <xacro:insert_block name="origin"/>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="${(1.0/12.0) * mass * (3*r*r + h*h)}" ixy="0.0" ixz="0.0"
+        iyy="${0.5 * mass * r*r}" iyz="0.0"
+        izz="${(1.0/12.0) * mass * (3*r*r + h*h)}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- Solid sphere inertia about its own center of mass -->
+  <xacro:macro name="sphere_inertial" params="mass r *origin">
+    <inertial>
+      <xacro:insert_block name="origin"/>
+      <mass value="${mass}"/>
+      <inertia
+        ixx="${(2.0/5.0) * mass * r*r}" ixy="0.0" ixz="0.0"
+        iyy="${(2.0/5.0) * mass * r*r}" iyz="0.0"
+        izz="${(2.0/5.0) * mass * r*r}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!-- ===================================================================
+       BASE LINK
+
+       P_cad = (0, 0, 0)  ==>  mesh origin xyz = (0 0 0), rpy = (0 0 cad_yaw)
+
+       Inertia uses the REAL values computed by Fusion for this body
+       (base_ixx/iyy/izz, already remapped to the ROS frame above) rather
+       than the generic box_inertial formula.
+       =================================================================== -->
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 ${cad_yaw}"/>
+      <geometry>
+        <mesh filename="package://zeko_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="zeko_chassis_grey"/>
+    </visual>
+
+    <collision>
+      <!-- Simplified box collision, sized to the chassis envelope -->
+      <origin xyz="0 0 ${base_bottom_z + base_height/2.0}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${base_length} ${base_width} ${base_height}"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <origin xyz="0 0 ${base_com_z}" rpy="0 0 0"/>
+      <mass value="${base_mass}"/>
+      <inertia ixx="${base_ixx}" ixy="0.0" ixz="0.0"
+               iyy="${base_iyy}" iyz="0.0"
+               izz="${base_izz}"/>
+    </inertial>
+  </link>
+
+</robot>

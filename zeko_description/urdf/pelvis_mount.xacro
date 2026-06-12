@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!--
+  pelvis_mount.xacro
+
+  Defines pelvis_mount_link: the top mounting plate of ZEKO, used as the
+  attachment point for sensors, manipulators, or a "pelvis" superstructure
+  in future iterations of the robot.
+
+  CAD anchor point (P_cad, see base.xacro for the remap formulas):
+    pelvis_mount_link : P_cad = (0, 0, 0.504)  [= support_frame_link top face, CAD_Z]
+
+  ==> mesh origin xyz = (-P_cad.y, P_cad.x, -P_cad.z) = (0, 0, -0.504)
+      joint  origin xyz (relative to support_frame_link)
+            = R(P_cad_self - P_cad_support_frame) = R(0,0,0.504-0.221) = (0, 0, support_frame_height)
+
+  The real mesh (pelvis_mount_link.stl) spans CAD_Z = [0.504, 0.656]
+  (i.e. relative Z = [0, 0.152] = pelvis_height), centered on
+  CAD_X = CAD_Y = 0, so the collision box below sits at
+  z = pelvis_height / 2.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <link name="pelvis_mount_link">
+    <visual>
+      <origin xyz="0 0 -0.504" rpy="0 0 ${cad_yaw}"/>
+      <geometry>
+        <mesh filename="package://zeko_description/meshes/pelvis_mount_link.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="zeko_pelvis_blue"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 ${pelvis_height/2.0}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${pelvis_length} ${pelvis_width} ${pelvis_height}"/>
+      </geometry>
+    </collision>
+
+    <xacro:box_inertial mass="${pelvis_mass}" x="${pelvis_length}" y="${pelvis_width}" z="${pelvis_height}">
+      <origin xyz="0 0 ${pelvis_height/2.0}" rpy="0 0 0"/>
+    </xacro:box_inertial>
+  </link>
+
+  <joint name="pelvis_mount_joint" type="fixed">
+    <parent link="support_frame_link"/>
+    <child link="pelvis_mount_link"/>
+    <origin xyz="0 0 ${support_frame_height}" rpy="0 0 0"/>
+  </joint>
+
+</robot>

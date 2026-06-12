@@ -1,0 +1,231 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "URDF USD Converter v0.1.2"
+    }
+    doc = """Generated from Composed Stage of root layer /tmp/tmpk3wvdxt0/zeko.usdc
+
+
+Generated from Composed Stage of root layer /tmp/urdf_import_zeko_0uaxugpy/usdex_zeko/zeko.usdc
+
+
+Generated from Composed Stage of root layer /tmp/urdf_import_zeko_0uaxugpy/temp_zeko/zeko.usd
+
+
+Generated from Composed Stage of root layer /home/zeko-sim/Downloads/zeko_description(2)/urdf/zeko/payloads/base.usd
+"""
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Scope "Instances"
+{
+    def Xform "base_link" (
+        prepend references = @./geometries.usd@</Geometries/base_link>
+    )
+    {
+        over "base_link" (
+            apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            custom rel material:binding
+            prepend rel material:binding = </Instances/base_link/VisualMaterials/zeko_chassis_grey>
+        }
+
+        def Scope "VisualMaterials"
+        {
+            def Material "zeko_chassis_grey" (
+                instanceable = true
+                prepend references = @./materials.usda@</Materials/zeko_chassis_grey>
+            )
+            {
+            }
+        }
+    }
+
+    def Xform "left_wheel_link" (
+        prepend references = @./geometries.usd@</Geometries/left_wheel_link>
+    )
+    {
+        over "left_wheel_link" (
+            apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            custom rel material:binding
+            prepend rel material:binding = </Instances/left_wheel_link/VisualMaterials/zeko_wheel_black>
+        }
+
+        def Scope "VisualMaterials"
+        {
+            def Material "zeko_wheel_black" (
+                instanceable = true
+                prepend references = @./materials.usda@</Materials/zeko_wheel_black>
+            )
+            {
+            }
+        }
+    }
+
+    def Xform "right_wheel_link" (
+        prepend references = @./geometries.usd@</Geometries/right_wheel_link>
+    )
+    {
+        over "right_wheel_link" (
+            apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            custom rel material:binding
+            prepend rel material:binding = </Instances/right_wheel_link/VisualMaterials/zeko_wheel_black>
+        }
+
+        def Scope "VisualMaterials"
+        {
+            def Material "zeko_wheel_black" (
+                instanceable = true
+                prepend references = @./materials.usda@</Materials/zeko_wheel_black>
+            )
+            {
+            }
+        }
+    }
+
+    def Xform "front_caster_fork" (
+        prepend references = @./geometries.usd@</Geometries/front_caster_fork>
+    )
+    {
+        over "front_caster_fork" (
+            apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            custom rel material:binding
+            prepend rel material:binding = </Instances/front_caster_fork/VisualMaterials/zeko_caster_dark_grey>
+        }
+
+        def Scope "VisualMaterials"
+        {
+            def Material "zeko_caster_dark_grey" (
+                instanceable = true
+                prepend references = @./materials.usda@</Materials/zeko_caster_dark_grey>
+            )
+            {
+            }
+        }
+    }
+
+    def Xform "front_caster_wheel" (
+        prepend references = @./geometries.usd@</Geometries/front_caster_wheel>
+    )
+    {
+        over "front_caster_wheel" (
+            apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            custom rel material:binding
+            prepend rel material:binding = </Instances/front_caster_wheel/VisualMaterials/zeko_wheel_black>
+        }
+
+        def Scope "VisualMaterials"
+        {
+            def Material "zeko_wheel_black" (
+                instanceable = true
+                prepend references = @./materials.usda@</Materials/zeko_wheel_black>
+            )
+            {
+            }
+        }
+    }
+
+    def Xform "rear_caster_fork" (
+        prepend references = @./geometries.usd@</Geometries/rear_caster_fork>
+    )
+    {
+        over "rear_caster_fork" (
+            apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            custom rel material:binding
+            prepend rel material:binding = </Instances/rear_caster_fork/VisualMaterials/zeko_caster_dark_grey>
+        }
+
+        def Scope "VisualMaterials"
+        {
+            def Material "zeko_caster_dark_grey" (
+                instanceable = true
+                prepend references = @./materials.usda@</Materials/zeko_caster_dark_grey>
+            )
+            {
+            }
+        }
+    }
+
+    def Xform "rear_caster_wheel" (
+        prepend references = @./geometries.usd@</Geometries/rear_caster_wheel>
+    )
+    {
+        over "rear_caster_wheel" (
+            apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            custom rel material:binding
+            prepend rel material:binding = </Instances/rear_caster_wheel/VisualMaterials/zeko_wheel_black>
+        }
+
+        def Scope "VisualMaterials"
+        {
+            def Material "zeko_wheel_black" (
+                instanceable = true
+                prepend references = @./materials.usda@</Materials/zeko_wheel_black>
+            )
+            {
+            }
+        }
+    }
+
+    def Xform "support_frame_link" (
+        prepend references = @./geometries.usd@</Geometries/support_frame_link>
+    )
+    {
+        over "support_frame_link" (
+            apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            custom rel material:binding
+            prepend rel material:binding = </Instances/support_frame_link/VisualMaterials/zeko_frame_silver>
+        }
+
+        def Scope "VisualMaterials"
+        {
+            def Material "zeko_frame_silver" (
+                instanceable = true
+                prepend references = @./materials.usda@</Materials/zeko_frame_silver>
+            )
+            {
+            }
+        }
+    }
+
+    def Xform "pelvis_mount_link" (
+        prepend references = @./geometries.usd@</Geometries/pelvis_mount_link>
+    )
+    {
+        over "pelvis_mount_link" (
+            apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            custom rel material:binding
+            prepend rel material:binding = </Instances/pelvis_mount_link/VisualMaterials/zeko_pelvis_blue>
+        }
+
+        def Scope "VisualMaterials"
+        {
+            def Material "zeko_pelvis_blue" (
+                instanceable = true
+                prepend references = @./materials.usda@</Materials/zeko_pelvis_blue>
+            )
+            {
+            }
+        }
+    }
+}
+

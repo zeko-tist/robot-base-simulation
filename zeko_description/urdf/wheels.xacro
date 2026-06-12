@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<!--
+  wheels.xacro
+
+  Defines the two driven wheels of ZEKO (differential drive):
+    - left_wheel_link  / left_wheel_joint  (continuous)
+    - right_wheel_link / right_wheel_joint (continuous)
+
+  CAD anchor points (P_cad, see base.xacro for the remap formulas):
+    left_wheel_link  : P_cad = (-0.300, 0, wheel_radius)  [CAD_X = -0.300]
+    right_wheel_link : P_cad = ( 0.300, 0, wheel_radius)  [CAD_X = +0.300]
+
+  ==> mesh origin xyz = (-P_cad.y, P_cad.x, -P_cad.z) = (0, -reflect * wheel_separation/2, -wheel_radius)
+      joint  origin xyz = (P_cad.y, -P_cad.x, P_cad.z) = (0,  reflect * wheel_separation/2,  wheel_radius)
+
+  (reflect = +1 for left -> +Y, reflect = -1 for right -> -Y)
+
+  Rotation axis: both wheel joints rotate about the link Y axis
+  (axis="0 1 0"). With the cad_yaw remap above, the CAD-frame axes
+  (+-1,0,0) on the real revolute joints map to (0,+-1,0) in ROS, i.e.
+  exactly the Y axis used here. A positive angular velocity on both
+  wheels drives the robot forward in +X. The wheel mesh's native
+  cylinder axis (CAD_X, width = wheel_width) becomes the link's Y axis
+  after the cad_yaw rotation, so the collision cylinder below is rotated
+  90 deg about X to match (native cylinder axis = Z -> Y).
+
+  Mass and inertia (wheel_mass, wheel_ixx/iyy/izz) are the values Fusion
+  computed for these solid wheel bodies (see base.xacro), already
+  remapped into the ROS frame. The center of mass is taken to coincide
+  with the link origin (the CAD export's small ~6 mm CoM offset is
+  within meshing/CAD tolerance and is neglected here).
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="zeko_wheel" params="prefix reflect">
+
+    <link name="${prefix}_wheel_link">
+      <visual>
+        <origin xyz="0 ${-reflect * wheel_separation / 2.0} ${-wheel_radius}" rpy="0 0 ${cad_yaw}"/>
+        <geometry>
+          <mesh filename="package://zeko_description/meshes/${prefix}_wheel_link.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="zeko_wheel_black"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${wheel_mass}"/>
+        <inertia ixx="${wheel_ixx}" ixy="0.0" ixz="0.0"
+                 iyy="${wheel_iyy}" iyz="0.0"
+                 izz="${wheel_izz}"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}_wheel_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${prefix}_wheel_link"/>
+      <origin xyz="0 ${reflect * wheel_separation / 2.0} ${wheel_radius}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit effort="60.0" velocity="20.0"/>
+      <dynamics damping="0.1" friction="0.05"/>
+    </joint>
+
+  </xacro:macro>
+
+  <!-- reflect = +1 -> +Y (left), reflect = -1 -> -Y (right) -->
+  <xacro:zeko_wheel prefix="left" reflect="1"/>
+  <xacro:zeko_wheel prefix="right" reflect="-1"/>
+
+</robot>

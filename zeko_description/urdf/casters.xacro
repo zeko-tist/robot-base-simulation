@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!--
+  casters.xacro
+
+  Defines the two passive support casters of ZEKO:
+    - front_caster_link / front_caster_joint (fixed)
+    - rear_caster_link  / rear_caster_joint  (fixed)
+
+  Each real caster assembly is two CAD bodies (a fork/yoke and the
+  caster wheel itself); both meshes are included as separate <visual>
+  / <collision> mesh entries on the same link.
+
+  CAD anchor points (P_cad, see base.xacro for the remap formulas):
+    front_caster_link : P_cad = (0,  0.450, caster_radius)  [CAD_Y = +0.450]
+    rear_caster_link  : P_cad = (0, -0.450, caster_radius)  [CAD_Y = -0.450]
+
+  ==> mesh origin xyz = (-P_cad.y, P_cad.x, -P_cad.z) = (-x_sign * caster_x_offset, 0, -caster_radius)
+      joint  origin xyz = (P_cad.y, -P_cad.x, P_cad.z) = ( x_sign * caster_x_offset, 0,  caster_radius)
+
+  (x_sign = +1 -> front (+X), x_sign = -1 -> rear (-X))
+
+  For collision/physics, each caster is approximated as a single sphere
+  of radius caster_radius (matching the real caster wheel's ~90 mm
+  diameter) so it provides a 3rd/4th ground contact point without adding
+  extra articulated DOFs; Isaac Sim / ros2_control only need to see the
+  two drive-wheel joints as actuated DOFs.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="zeko_caster" params="prefix x_sign">
+
+    <link name="${prefix}_caster_link">
+      <visual>
+        <origin xyz="${-x_sign * caster_x_offset} 0 ${-caster_radius}" rpy="0 0 ${cad_yaw}"/>
+        <geometry>
+          <mesh filename="package://zeko_description/meshes/${prefix}_caster_fork.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="zeko_caster_dark_grey"/>
+      </visual>
+
+      <visual>
+        <origin xyz="${-x_sign * caster_x_offset} 0 ${-caster_radius}" rpy="0 0 ${cad_yaw}"/>
+        <geometry>
+          <mesh filename="package://zeko_description/meshes/${prefix}_caster_wheel.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="zeko_wheel_black"/>
+      </visual>
+
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="${caster_radius}"/>
+        </geometry>
+      </collision>
+
+      <xacro:sphere_inertial mass="${caster_mass}" r="${caster_radius}">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </xacro:sphere_inertial>
+    </link>
+
+    <joint name="${prefix}_caster_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="${prefix}_caster_link"/>
+      <origin xyz="${x_sign * caster_x_offset} 0 ${caster_radius}" rpy="0 0 0"/>
+    </joint>
+
+  </xacro:macro>
+
+  <!-- x_sign = +1 -> +X (front), x_sign = -1 -> -X (rear) -->
+  <xacro:zeko_caster prefix="front" x_sign="1"/>
+  <xacro:zeko_caster prefix="rear" x_sign="-1"/>
+
+</robot>
