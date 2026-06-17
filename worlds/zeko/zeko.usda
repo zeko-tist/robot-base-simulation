@@ -7,8 +7,8 @@
                 double radius = 11.950167083740235
             }
             dictionary Perspective = {
-                double3 position = (-3033.9428562729327, 4104.019986651632, 348.1138956442852)
-                double3 target = (-3035.4112219090357, 4115.614168885231, 344.70295843102576)
+                double3 position = (-3070.1615371809694, 4127.449029009035, 351.9179736758093)
+                double3 target = (-3069.2110139110077, 4127.9870881831885, 351.44260276118945)
             }
             dictionary Right = {
                 double3 position = (0, -5, 0)
@@ -59,9 +59,9 @@ def Xform "zeko" (
     append variantSets = "Physics"
 )
 {
-    quatf xformOp:orient = (0.022313725, 0, 0, 0.99975103)
+    quatf xformOp:orient = (0.99954146, 0, 0, -0.03027897)
     float3 xformOp:scale = (1, 1, 1)
-    double3 xformOp:translate = (-3031.414708705146, 4112.98442071452, 343.11149624401037)
+    double3 xformOp:translate = (-3063.3913152710047, 4131.879981551859, 347.4274664248507)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
     over "Geometry"
@@ -535,10 +535,10 @@ over "OmniverseKit_Persp" (
     float exposure:time = 0.02
     float focalLength = 18.147562
     float focusDistance = 400
-    custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -12.174385076051532)
-    float3 xformOp:rotateXYZ = (73.729454, -1.04560735e-13, 7.2178984)
+    custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -1.1912093300908067)
+    float3 xformOp:rotateXYZ = (66.48021, -9.8597196e-14, -60.487263)
     float3 xformOp:scale = (1, 1, 1)
-    double3 xformOp:translate = (-3033.9428562729327, 4104.019986651632, 348.1138956442852)
+    double3 xformOp:translate = (-3070.1615371809694, 4127.449029009035, 351.9179736758093)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 }
 
@@ -636,15 +636,15 @@ def PhysicsScene "PhysicsScene" (
 }
 
 def "__floor_final" (
-    displayName = "1_floor final"
-    prepend payload = @../../../1_floor final.usd@
+    displayName = "1_floor_final"
+    prepend payload = @../1_floor_final.usd@
 )
 {
-    quatf xformOp:orient = (1, 0, 0, 0)
+    quatf xformOp:orient = (0.022313725, 0, 0, 0.99975103)
     double xformOp:rotateX:unitsResolve = 90
     float3 xformOp:scale = (1, 1, 1)
     double3 xformOp:scale:unitsResolve = (0.01, 0.01, 0.01)
-    double3 xformOp:translate = (-3065.289983593172, 4128.178648019496, 348.3297196847862)
+    double3 xformOp:translate = (-3016.4170451367736, 4097.612667415186, 347.8742154245206)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale", "xformOp:rotateX:unitsResolve", "xformOp:scale:unitsResolve"]
 
     over "mesh" (
@@ -653,10 +653,6 @@ def "__floor_final" (
     {
         uniform token physics:approximation = "none"
         bool physics:collisionEnabled = 1
-        quatf xformOp:orient = (1, 0, 0, 0)
-        float3 xformOp:scale = (1, 1, 1)
-        double3 xformOp:translate = (-1693.4156418105122, -472.3224963972607, -1386.1699677325669)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
     }
 }
 
