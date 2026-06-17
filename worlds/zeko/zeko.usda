@@ -7,8 +7,8 @@
                 double radius = 11.950167083740235
             }
             dictionary Perspective = {
-                double3 position = (-3070.1615371809694, 4127.449029009035, 351.9179736758093)
-                double3 target = (-3069.2110139110077, 4127.9870881831885, 351.44260276118945)
+                double3 position = (28.767098087966552, -36.85299414896548, 12.845805210635067)
+                double3 target = (107.7832937401279, -30.35447067395784, -41.429040829316975)
             }
             dictionary Right = {
                 double3 position = (0, -5, 0)
@@ -25,6 +25,8 @@
             dictionary "/zeko/__floor" = {
             }
             dictionary "/zeko/__floor_final" = {
+            }
+            dictionary "/zeko/__floor_final_scaled" = {
             }
             int version = 1
         }
@@ -59,9 +61,9 @@ def Xform "zeko" (
     append variantSets = "Physics"
 )
 {
-    quatf xformOp:orient = (0.99954146, 0, 0, -0.03027897)
+    quatf xformOp:orient = (0.99954146, 0, 0, -0.030279808)
     float3 xformOp:scale = (1, 1, 1)
-    double3 xformOp:translate = (-3063.3913152710047, 4131.879981551859, 347.4274664248507)
+    double3 xformOp:translate = (45.88278977217267, -35.55213520818037, -0.44347735943719524)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
     over "Geometry"
@@ -71,8 +73,8 @@ def Xform "zeko" (
             string isaac:nameOverride (
                 displayName = "Name Override"
             )
-            vector3f physics:angularVelocity = (-0.0000131276865, 0.0000021425033, -6.283742e-14)
-            vector3f physics:velocity = (-7.842743e-10, -4.8054605e-9, -8.501997)
+            vector3f physics:angularVelocity = (0, 0, 0)
+            vector3f physics:velocity = (0, 0, 0)
             quatf xformOp:orient = (1, 0, 0, 0)
             float3 xformOp:scale = (1, 1, 1)
             float3 xformOp:translate = (0, 0, 0.49612427)
@@ -139,6 +141,28 @@ def Xform "zeko" (
                     quatf xformOp:orient = (1, 0, 0, 0)
                     double3 xformOp:translate = (2.2611681693707197e-8, 3.6969771244343974e-8, 0.28299999237060547)
                 }
+
+                def Lidar "Lidar"
+                {
+                    bool drawLines = 0
+                    bool drawPoints = 0
+                    bool enabled = 1
+                    bool enableSemantics = 0
+                    bool highLod = 0
+                    float horizontalFov = 360
+                    float horizontalResolution = 0.4
+                    float maxRange = 10
+                    float minRange = 0.4
+                    float rotationRate = 20
+                    float verticalFov = 30
+                    float verticalResolution = 4
+                    token visibility = "inherited"
+                    quatd xformOp:orient = (1, 0, 0, 0)
+                    double3 xformOp:scale = (1, 1, 1)
+                    double3 xformOp:translate = (0, 0.1, 0)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                    float yawOffset = 0
+                }
             }
         }
     }
@@ -189,7 +213,7 @@ def Xform "zeko" (
             )
             custom double outputs:time
             uniform token ui:nodegraph:node:expansionState = "open"
-            uniform float2 ui:nodegraph:node:pos = (92.232956, 228.71317)
+            uniform float2 ui:nodegraph:node:pos = (-853.0876, 162.27065)
         }
 
         def OmniGraphNode "ros2_publish_clock" (
@@ -207,11 +231,12 @@ def Xform "zeko" (
             custom string inputs:qosProfile
             custom uint64 inputs:queueSize
             custom double inputs:timeStamp
+            prepend double inputs:timeStamp.connect = </zeko/ActionGraph/isaac_read_simulation_time.outputs:simulationTime>
             custom string inputs:topicName
             token node:type = "isaacsim.ros2.bridge.ROS2PublishClock"
             int node:typeVersion = 1
             uniform token ui:nodegraph:node:expansionState = "open"
-            uniform float2 ui:nodegraph:node:pos = (425.32132, 371.37683)
+            uniform float2 ui:nodegraph:node:pos = (-334.2885, 430.2395)
         }
 
         def OmniGraphNode "ros2_publish_joint_state" (
@@ -245,11 +270,12 @@ def Xform "zeko" (
                 }
             )
             custom double inputs:timeStamp
+            prepend double inputs:timeStamp.connect = </zeko/ActionGraph/isaac_read_simulation_time.outputs:simulationTime>
             custom string inputs:topicName
             token node:type = "isaacsim.ros2.bridge.ROS2PublishJointState"
             int node:typeVersion = 1
             uniform token ui:nodegraph:node:expansionState = "open"
-            uniform float2 ui:nodegraph:node:pos = (644.1077, 46.75957)
+            uniform float2 ui:nodegraph:node:pos = (-423.83096, -334.44687)
         }
 
         def OmniGraphNode "ros2_publish_transform_tree" (
@@ -289,12 +315,13 @@ def Xform "zeko" (
                 }
             )
             custom double inputs:timeStamp
+            prepend double inputs:timeStamp.connect = </zeko/ActionGraph/isaac_read_simulation_time.outputs:simulationTime>
             custom string inputs:topicName
             custom double3[] inputs:translations
             token node:type = "isaacsim.ros2.bridge.ROS2PublishTransformTree"
             int node:typeVersion = 1
             uniform token ui:nodegraph:node:expansionState = "open"
-            uniform float2 ui:nodegraph:node:pos = (931.4507, 43.881546)
+            uniform float2 ui:nodegraph:node:pos = (-363.53018, 677.35706)
         }
 
         def OmniGraphNode "differential_controller" (
@@ -325,7 +352,7 @@ def Xform "zeko" (
             int node:typeVersion = 1
             custom double[] outputs:velocityCommand
             uniform token ui:nodegraph:node:expansionState = "open"
-            uniform float2 ui:nodegraph:node:pos = (845.9468, 547.1657)
+            uniform float2 ui:nodegraph:node:pos = (770.26587, 269.6699)
         }
 
         def OmniGraphNode "articulation_controller" (
@@ -357,7 +384,7 @@ def Xform "zeko" (
             token node:type = "isaacsim.core.nodes.IsaacArticulationController"
             int node:typeVersion = 1
             uniform token ui:nodegraph:node:expansionState = "open"
-            uniform float2 ui:nodegraph:node:pos = (1139.1161, 443.3426)
+            uniform float2 ui:nodegraph:node:pos = (1094.7994, 59.33316)
         }
 
         def OmniGraphNode "ros2_subscribe_twist" (
@@ -385,7 +412,7 @@ def Xform "zeko" (
             )
             custom vector3d outputs:linearVelocity
             uniform token ui:nodegraph:node:expansionState = "open"
-            uniform float2 ui:nodegraph:node:pos = (326.13214, 599.43677)
+            uniform float2 ui:nodegraph:node:pos = (-4.62051, 459.28748)
         }
 
         def OmniGraphNode "break_3_vector" (
@@ -400,7 +427,7 @@ def Xform "zeko" (
             custom token outputs:y
             custom token outputs:z
             uniform token ui:nodegraph:node:expansionState = "open"
-            uniform float2 ui:nodegraph:node:pos = (569.0809, 608.82605)
+            uniform float2 ui:nodegraph:node:pos = (339.23584, 491.10065)
         }
 
         def OmniGraphNode "break_3_vector_01" (
@@ -415,7 +442,182 @@ def Xform "zeko" (
             custom token outputs:y
             custom token outputs:z
             uniform token ui:nodegraph:node:expansionState = "open"
-            uniform float2 ui:nodegraph:node:pos = (557.8454, 768.76733)
+            uniform float2 ui:nodegraph:node:pos = (364.4391, 726.7226)
+        }
+
+        def OmniGraphNode "ros2_publish_laser_scan" (
+            prepend apiSchemas = ["NodeGraphNodeAPI"]
+        )
+        {
+            custom float2 inputs:azimuthRange
+            prepend float2 inputs:azimuthRange.connect = </zeko/ActionGraph/isaac_read_lidar_beams_node.outputs:azimuthRange>
+            custom uint64 inputs:bufferSize
+            custom uint64 inputs:context
+            custom uint64 inputs:dataPtr = 0
+            custom float2 inputs:depthRange
+            prepend float2 inputs:depthRange.connect = </zeko/ActionGraph/isaac_read_lidar_beams_node.outputs:depthRange>
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            delete uint inputs:execIn.connect = </zeko/ActionGraph/on_playback_tick.outputs:tick>
+            prepend uint inputs:execIn.connect = </zeko/ActionGraph/isaac_read_lidar_beams_node.outputs:execOut>
+            custom string inputs:frameId = "support_frame_link"
+            custom float inputs:horizontalFov
+            prepend float inputs:horizontalFov.connect = </zeko/ActionGraph/isaac_read_lidar_beams_node.outputs:horizontalFov>
+            custom float inputs:horizontalResolution
+            prepend float inputs:horizontalResolution.connect = </zeko/ActionGraph/isaac_read_lidar_beams_node.outputs:horizontalResolution>
+            custom uchar[] inputs:intensitiesData
+            prepend uchar[] inputs:intensitiesData.connect = </zeko/ActionGraph/isaac_read_lidar_beams_node.outputs:intensitiesData>
+            custom float[] inputs:linearDepthData
+            prepend float[] inputs:linearDepthData.connect = </zeko/ActionGraph/isaac_read_lidar_beams_node.outputs:linearDepthData>
+            custom string inputs:nodeNamespace
+            custom int inputs:numCols
+            prepend int inputs:numCols.connect = </zeko/ActionGraph/isaac_read_lidar_beams_node.outputs:numCols>
+            custom int inputs:numRows
+            prepend int inputs:numRows.connect = </zeko/ActionGraph/isaac_read_lidar_beams_node.outputs:numRows>
+            custom string inputs:qosProfile
+            custom uint64 inputs:queueSize
+            custom float inputs:rotationRate
+            prepend float inputs:rotationRate.connect = </zeko/ActionGraph/isaac_read_lidar_beams_node.outputs:rotationRate>
+            custom double inputs:timeStamp
+            prepend double inputs:timeStamp.connect = </zeko/ActionGraph/isaac_read_simulation_time.outputs:simulationTime>
+            custom string inputs:topicName
+            token node:type = "isaacsim.ros2.bridge.ROS2PublishLaserScan"
+            int node:typeVersion = 3
+            uniform token ui:nodegraph:node:expansionState = "open"
+            uniform float2 ui:nodegraph:node:pos = (385.78873, -888.5482)
+        }
+
+        def OmniGraphNode "ros2_publish_odometry" (
+            prepend apiSchemas = ["NodeGraphNodeAPI"]
+        )
+        {
+            custom vector3d inputs:angularVelocity
+            prepend vector3d inputs:angularVelocity.connect = </zeko/ActionGraph/isaac_compute_odometry_node.outputs:angularVelocity>
+            custom string inputs:chassisFrameId
+            custom uint64 inputs:context
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            prepend uint inputs:execIn.connect = </zeko/ActionGraph/on_playback_tick.outputs:tick>
+            custom vector3d inputs:linearVelocity
+            prepend vector3d inputs:linearVelocity.connect = </zeko/ActionGraph/isaac_compute_odometry_node.outputs:linearVelocity>
+            custom string inputs:nodeNamespace
+            custom string inputs:odomFrameId
+            custom quatd inputs:orientation
+            prepend quatd inputs:orientation.connect = </zeko/ActionGraph/isaac_compute_odometry_node.outputs:orientation>
+            custom vector3d inputs:position
+            prepend vector3d inputs:position.connect = </zeko/ActionGraph/isaac_compute_odometry_node.outputs:position>
+            custom bool inputs:publishRawVelocities
+            custom string inputs:qosProfile
+            custom uint64 inputs:queueSize
+            custom vector3d inputs:robotFront
+            custom double inputs:timeStamp
+            prepend double inputs:timeStamp.connect = </zeko/ActionGraph/isaac_read_simulation_time.outputs:simulationTime>
+            custom string inputs:topicName
+            token node:type = "isaacsim.ros2.bridge.ROS2PublishOdometry"
+            int node:typeVersion = 1
+            uniform token ui:nodegraph:node:expansionState = "open"
+            uniform float2 ui:nodegraph:node:pos = (520.25006, -336.78085)
+        }
+
+        def OmniGraphNode "isaac_compute_odometry_node" (
+            prepend apiSchemas = ["NodeGraphNodeAPI"]
+        )
+        {
+            custom rel inputs:chassisPrim = </zeko/Geometry/base_link> (
+                customData = {
+                    dictionary omni = {
+                        dictionary graph = {
+                            string relType = "target"
+                        }
+                    }
+                }
+            )
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            prepend uint inputs:execIn.connect = </zeko/ActionGraph/on_playback_tick.outputs:tick>
+            token node:type = "isaacsim.core.nodes.IsaacComputeOdometry"
+            int node:typeVersion = 1
+            custom vector3d outputs:angularAcceleration
+            custom vector3d outputs:angularVelocity
+            custom uint outputs:execOut (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            custom vector3d outputs:globalLinearAcceleration
+            custom vector3d outputs:globalLinearVelocity
+            custom vector3d outputs:linearAcceleration
+            custom vector3d outputs:linearVelocity
+            custom quatd outputs:orientation
+            custom vector3d outputs:position
+            uniform token ui:nodegraph:node:expansionState = "open"
+            uniform float2 ui:nodegraph:node:pos = (-5.262231, -286.91254)
+        }
+
+        def OmniGraphNode "isaac_read_lidar_beams_node" (
+            prepend apiSchemas = ["NodeGraphNodeAPI"]
+        )
+        {
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            prepend uint inputs:execIn.connect = </zeko/ActionGraph/on_playback_tick.outputs:tick>
+            custom rel inputs:lidarPrim = </zeko/Geometry/base_link/support_frame_link/Lidar> (
+                customData = {
+                    dictionary omni = {
+                        dictionary graph = {
+                            string relType = "target"
+                        }
+                    }
+                }
+            )
+            token node:type = "isaacsim.sensors.physx.IsaacReadLidarBeams"
+            int node:typeVersion = 1
+            custom float2 outputs:azimuthRange
+            custom float[] outputs:beamTimeData
+            custom float2 outputs:depthRange
+            custom uint outputs:execOut (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            custom float outputs:horizontalFov
+            custom float outputs:horizontalResolution
+            custom uchar[] outputs:intensitiesData
+            custom float[] outputs:linearDepthData
+            custom int outputs:numCols
+            custom int outputs:numRows
+            custom float outputs:rotationRate
+            custom float outputs:verticalFov
+            custom float outputs:verticalResolution
+            custom float2 outputs:zenithRange
+            uniform token ui:nodegraph:node:expansionState = "open"
+            uniform float2 ui:nodegraph:node:pos = (-202.44572, -864.321)
+        }
+
+        def OmniGraphNode "isaac_read_simulation_time" (
+            prepend apiSchemas = ["NodeGraphNodeAPI"]
+        )
+        {
+            custom uint64 inputs:referenceTimeDenominator
+            custom int64 inputs:referenceTimeNumerator
+            custom bool inputs:resetOnStop
+            token node:type = "isaacsim.core.nodes.IsaacReadSimulationTime"
+            int node:typeVersion = 1
+            custom double outputs:simulationTime
+            uniform token ui:nodegraph:node:expansionState = "open"
+            uniform float2 ui:nodegraph:node:pos = (-926.3715, 364.84497)
         }
     }
     variantSet "Physics" = {
@@ -535,10 +737,10 @@ over "OmniverseKit_Persp" (
     float exposure:time = 0.02
     float focalLength = 18.147562
     float focusDistance = 400
-    custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -1.1912093300908067)
-    float3 xformOp:rotateXYZ = (66.48021, -9.8597196e-14, -60.487263)
+    custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -96.08094970053305)
+    float3 xformOp:rotateXYZ = (55.60558, -7.951387e-14, -85.29841)
     float3 xformOp:scale = (1, 1, 1)
-    double3 xformOp:translate = (-3070.1615371809694, 4127.449029009035, 351.9179736758093)
+    double3 xformOp:translate = (28.767098087966552, -36.85299414896548, 12.845805210635067)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 }
 
@@ -640,11 +842,11 @@ def "__floor_final" (
     prepend payload = @../1_floor_final.usd@
 )
 {
-    quatf xformOp:orient = (0.022313725, 0, 0, 0.99975103)
+    quatf xformOp:orient = (0.99954146, 0, 0, -0.030279808)
     double xformOp:rotateX:unitsResolve = 90
     float3 xformOp:scale = (1, 1, 1)
     double3 xformOp:scale:unitsResolve = (0.01, 0.01, 0.01)
-    double3 xformOp:translate = (-3016.4170451367736, 4097.612667415186, 347.8742154245206)
+    double3 xformOp:translate = (0, 0, 0)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale", "xformOp:rotateX:unitsResolve", "xformOp:scale:unitsResolve"]
 
     over "mesh" (
