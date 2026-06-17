@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!--
+  support_frame.xacro
+
+  Defines support_frame_link: the structural frame rising from the top
+  deck of base_link, carrying the pelvis_mount_link above it.
+
+  CAD anchor point (P_cad, see base.xacro for the remap formulas):
+    support_frame_link : P_cad = (0, 0, 0.221)  [= base_link top face, CAD_Z]
+
+  ==> mesh origin xyz = (-P_cad.y, P_cad.x, -P_cad.z) = (0, 0, -0.221)
+      joint  origin xyz (relative to base_link)
+            = R(P_cad_self - P_cad_base_link) = R(0,0,0.221) = (0, 0, 0.221)
+
+  The real mesh (support_frame_link.stl) spans CAD_Z = [0.221, 0.504]
+  (i.e. relative Z = [0, 0.283] = support_frame_height), centered on
+  CAD_X = CAD_Y = 0, so the collision box below sits at
+  z = support_frame_height / 2.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <link name="support_frame_link">
+    <visual>
+      <origin xyz="0 0 -0.221" rpy="0 0 ${cad_yaw}"/>
+      <geometry>
+        <mesh filename="package://zeko_description/meshes/support_frame_link.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="zeko_frame_silver"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 ${support_frame_height/2.0}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${support_frame_length} ${support_frame_width} ${support_frame_height}"/>
+      </geometry>
+    </collision>
+
+    <xacro:box_inertial mass="${support_frame_mass}" x="${support_frame_length}" y="${support_frame_width}" z="${support_frame_height}">
+      <origin xyz="0 0 ${support_frame_height/2.0}" rpy="0 0 0"/>
+    </xacro:box_inertial>
+  </link>
+
+  <joint name="support_frame_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="support_frame_link"/>
+    <origin xyz="0 0 ${base_bottom_z + base_height}" rpy="0 0 0"/>
+  </joint>
+
+</robot>

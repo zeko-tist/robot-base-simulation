@@ -1,0 +1,181 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "URDF USD Converter v0.1.2"
+    }
+    defaultPrim = "zeko"
+    doc = """Generated from Composed Stage of root layer /tmp/tmpk3wvdxt0/zeko.usdc
+
+
+Generated from Composed Stage of root layer /tmp/urdf_import_zeko_0uaxugpy/usdex_zeko/zeko.usdc
+
+
+Generated from Composed Stage of root layer /tmp/urdf_import_zeko_0uaxugpy/temp_zeko/zeko.usd
+
+
+Generated from Composed Stage of root layer /home/zeko-sim/Downloads/zeko_description(2)/urdf/zeko/payloads/base.usd
+"""
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    subLayers = [
+        @./physics.usda@
+    ]
+    upAxis = "Z"
+)
+
+over "zeko"
+{
+    over "Physics"
+    {
+        def MjcActuator "left_wheel_joint_actuator"
+        {
+            uniform double[] mjc:biasPrm = [0, 0, -0.10000000149011612, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:forceRange:max = 60
+            uniform double mjc:forceRange:min = -60
+            uniform double[] mjc:gainPrm = [0.10000000149011612, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+            custom rel mjc:target
+            prepend rel mjc:target = </zeko/Physics/left_wheel_joint>
+        }
+
+        def MjcActuator "right_wheel_joint_actuator"
+        {
+            uniform double[] mjc:biasPrm = [0, 0, -0.10000000149011612, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:forceRange:max = 60
+            uniform double mjc:forceRange:min = -60
+            uniform double[] mjc:gainPrm = [0.10000000149011612, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+            custom rel mjc:target
+            prepend rel mjc:target = </zeko/Physics/right_wheel_joint>
+        }
+
+        over "left_wheel_joint" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            custom float mjc:frictionloss = 0.05
+        }
+
+        over "right_wheel_joint" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            custom float mjc:frictionloss = 0.05
+        }
+
+        over "front_caster_joint"
+        {
+        }
+
+        over "rear_caster_joint"
+        {
+        }
+
+        over "support_frame_joint"
+        {
+        }
+
+        over "pelvis_mount_joint"
+        {
+        }
+    }
+
+    over "Geometry"
+    {
+        over "base_link"
+        {
+            over "left_wheel_link"
+            {
+                over "left_wheel_link"
+                {
+                }
+
+                over "cylinder"
+                {
+                }
+            }
+
+            over "right_wheel_link"
+            {
+                over "right_wheel_link"
+                {
+                }
+
+                over "cylinder"
+                {
+                }
+            }
+
+            over "front_caster_link"
+            {
+                over "front_caster_fork"
+                {
+                }
+
+                over "front_caster_wheel"
+                {
+                }
+
+                over "sphere"
+                {
+                }
+            }
+
+            over "rear_caster_link"
+            {
+                over "rear_caster_fork"
+                {
+                }
+
+                over "rear_caster_wheel"
+                {
+                }
+
+                over "sphere"
+                {
+                }
+            }
+
+            over "support_frame_link"
+            {
+                over "pelvis_mount_link"
+                {
+                    over "pelvis_mount_link"
+                    {
+                    }
+
+                    over "box"
+                    {
+                    }
+                }
+
+                over "support_frame_link"
+                {
+                }
+
+                over "box"
+                {
+                }
+            }
+
+            over "base_link"
+            {
+            }
+
+            over "box"
+            {
+            }
+        }
+    }
+
+    over "Materials"
+    {
+    }
+
+    over "VisualMaterials"
+    {
+    }
+}
+

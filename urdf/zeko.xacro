@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<!--
+  zeko.xacro
+
+  Top-level Xacro entry point for the ZEKO differential-drive mobile
+  robot. Assembles the modular description from:
+
+    materials.xacro       - shared visual materials
+    base.xacro             - global properties, inertia macros, base_link
+    wheels.xacro            - left_wheel_link / right_wheel_link (continuous)
+    casters.xacro           - front_caster_link / rear_caster_link (fixed)
+    support_frame.xacro     - support_frame_link (fixed)
+    pelvis_mount.xacro      - pelvis_mount_link (fixed)
+
+  and adds the <ros2_control> hardware interface block used by
+  config/ros2_control.yaml.
+
+  Resulting link tree:
+
+    base_link
+    |+- left_wheel_link    (left_wheel_joint,  continuous, axis Y)
+    |+- right_wheel_link   (right_wheel_joint, continuous, axis Y)
+    |+- front_caster_link  (front_caster_joint, fixed)
+    |+- rear_caster_link   (rear_caster_joint,  fixed)
+    `+- support_frame_link (support_frame_joint, fixed)
+          `+- pelvis_mount_link (pelvis_mount_joint, fixed)
+-->
+<robot name="zeko" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- NOTE: base.xacro must be included first +- it defines the shared
+       xacro:property values and inertia macros used by every other
+       module below. -->
+  <xacro:include filename="$(find zeko_description)/urdf/materials.xacro"/>
+  <xacro:include filename="$(find zeko_description)/urdf/base.xacro"/>
+  <xacro:include filename="$(find zeko_description)/urdf/wheels.xacro"/>
+  <xacro:include filename="$(find zeko_description)/urdf/casters.xacro"/>
+  <xacro:include filename="$(find zeko_description)/urdf/support_frame.xacro"/>
+  <xacro:include filename="$(find zeko_description)/urdf/pelvis_mount.xacro"/>
+
+  <!-- =====================================================================
+       ros2_control HARDWARE INTERFACE
+
+       Exposes left_wheel_joint and right_wheel_joint as velocity-controlled
+       actuated DOFs with position + velocity state feedback. This is the
+       interface consumed by config/ros2_control.yaml
+       (diff_drive_controller).
+
+       The "mock_components/GenericSystem" plugin lets this URDF be loaded
+       and driven (e.g. via `ros2 control` CLI, RViz, or Isaac Sim's ROS2
+       Articulation Controller bridge) without any real or simulated
+       hardware backend. For a Gazebo simulation, replace the <plugin> name
+       with "gazebo_ros2_control/GazeboSystem" (and load the
+       gazebo_ros2_control plugin in the world/sdf). For Isaac Sim, the
+       URDF importer reads left_wheel_joint / right_wheel_joint directly
+       from the <joint> definitions above to build the articulation +- this
+       <ros2_control> block is only required for the ros2_control /
+       diff_drive_controller stack running alongside Isaac Sim's ROS2
+       bridge.
+       ===================================================================== -->
+  <ros2_control name="zeko_system" type="system">
+    <hardware>
+      <plugin>mock_components/GenericSystem</plugin>
+    </hardware>
+
+    <joint name="left_wheel_joint">
+      <command_interface name="velocity">
+        <param name="min">-20.0</param>
+        <param name="max">20.0</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+    <joint name="right_wheel_joint">
+      <command_interface name="velocity">
+        <param name="min">-20.0</param>
+        <param name="max">20.0</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+</robot>
