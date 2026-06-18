@@ -7,8 +7,8 @@
                 double radius = 11.950167083740235
             }
             dictionary Perspective = {
-                double3 position = (23.156004844913575, -43.64047325675803, 18.722101917315097)
-                double3 target = (93.7161292823535, 7.220010583487962, -39.00982959306718)
+                double3 position = (55.02584444863644, -10.925507161361505, 11.62683462943017)
+                double3 target = (42.00818486433609, 13.446421158671995, 2.3666687006998632)
             }
             dictionary Right = {
                 double3 position = (0, -5, 0)
@@ -61,9 +61,9 @@ def Xform "zeko" (
     append variantSets = "Physics"
 )
 {
-    quatf xformOp:orient = (-0.024430318, 0, 0, -0.99970156)
+    quatf xformOp:orient = (0, 0, 0, 1)
     float3 xformOp:scale = (1, 1, 1)
-    double3 xformOp:translate = (45.88278977217267, -34.56998848663409, -0.44347735943719524)
+    double3 xformOp:translate = (42.3, 12.65, 0.3)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
     over "Geometry"
@@ -74,6 +74,7 @@ def Xform "zeko" (
                 displayName = "Name Override"
             )
             vector3f physics:angularVelocity = (0, 0, 0)
+            float physics:mass = 20
             vector3f physics:velocity = (0, 0, 0)
             quatf xformOp:orient = (1, 0, 0, 0)
             float3 xformOp:scale = (1, 1, 1)
@@ -85,8 +86,8 @@ def Xform "zeko" (
                 string isaac:nameOverride (
                     displayName = "Name Override"
                 )
-                vector3f physics:angularVelocity = (-0.0000131276865, 0.000002142503, -6.283739e-14)
-                vector3f physics:velocity = (-1.1491172e-9, -7.0409527e-9, -8.501997)
+                vector3f physics:angularVelocity = (0, 0, 0)
+                vector3f physics:velocity = (0, 0, 0)
                 quatf xformOp:orient = (1, 0, -1.4901161e-8, 0)
                 double3 xformOp:translate = (-1.4432899320127035e-15, 0.29999989566142804, 0.15240001678466797)
             }
@@ -96,8 +97,8 @@ def Xform "zeko" (
                 string isaac:nameOverride (
                     displayName = "Name Override"
                 )
-                vector3f physics:angularVelocity = (-0.0000131276865, 0.0000021425033, -6.283742e-14)
-                vector3f physics:velocity = (-1.1491179e-9, -7.0409527e-9, -8.501997)
+                vector3f physics:angularVelocity = (0, 0, 0)
+                vector3f physics:velocity = (0, 0, 0)
                 quatf xformOp:orient = (1, 0, -1.4901161e-8, 0)
                 double3 xformOp:translate = (1.6653345369377348e-15, -0.29999988976185077, 0.15240001678466797)
             }
@@ -107,8 +108,8 @@ def Xform "zeko" (
                 string isaac:nameOverride (
                     displayName = "Name Override"
                 )
-                vector3f physics:angularVelocity = (-0.0000131276865, 0.0000021425033, -6.283742e-14)
-                vector3f physics:velocity = (-5.165203e-9, -3.164857e-8, -8.501997)
+                vector3f physics:angularVelocity = (0, 0, 0)
+                vector3f physics:velocity = (0, 0, 0)
                 quatf xformOp:orient = (1, -0, -0, 0)
                 double3 xformOp:translate = (0.4499999889351261, 0, 0.04500007629394531)
             }
@@ -118,8 +119,8 @@ def Xform "zeko" (
                 string isaac:nameOverride (
                     displayName = "Name Override"
                 )
-                vector3f physics:angularVelocity = (-0.0000131276865, 0.0000021425033, -6.283742e-14)
-                vector3f physics:velocity = (-5.165203e-9, -3.164857e-8, -8.501997)
+                vector3f physics:angularVelocity = (0, 0, 0)
+                vector3f physics:velocity = (0, 0, 0)
                 quatf xformOp:orient = (1, -0, -0, 0)
                 double3 xformOp:translate = (-0.449999987223016, 0, 0.04500007629394531)
             }
@@ -129,15 +130,15 @@ def Xform "zeko" (
                 string isaac:nameOverride (
                     displayName = "Name Override"
                 )
-                vector3f physics:angularVelocity = (-0.0000131276865, 0.0000021425033, -6.283742e-14)
-                vector3f physics:velocity = (6.7073134e-9, 4.1097486e-8, -8.501997)
+                vector3f physics:angularVelocity = (0, 0, 0)
+                vector3f physics:velocity = (0, 0, 0)
                 quatf xformOp:orient = (1, -0, -0, 0)
                 double3 xformOp:translate = (0, -3.590719943602494e-9, 0.22100019454956055)
 
                 over "pelvis_mount_link"
                 {
-                    vector3f physics:angularVelocity = (-0.0000131276865, 0.0000021425033, -6.283742e-14)
-                    vector3f physics:velocity = (1.484045e-8, 9.093137e-8, -8.501997)
+                    vector3f physics:angularVelocity = (0, 0, 0)
+                    vector3f physics:velocity = (0, 0, 0)
                     quatf xformOp:orient = (1, 0, 0, 0)
                     double3 xformOp:translate = (2.2611681693707197e-8, 3.6969771244343974e-8, 0.28299999237060547)
                 }
@@ -346,7 +347,7 @@ def Xform "zeko" (
             custom double inputs:maxDeceleration
             custom double inputs:maxLinearSpeed
             custom double inputs:maxWheelSpeed
-            custom double inputs:wheelDistance = 0.6
+            custom double inputs:wheelDistance = 0.65
             custom double inputs:wheelRadius = 0.1524
             token node:type = "isaacsim.robot.wheeled_robots.DifferentialController"
             int node:typeVersion = 1
@@ -737,10 +738,10 @@ over "OmniverseKit_Persp" (
     float exposure:time = 0.02
     float focalLength = 18.147562
     float focusDistance = 400
-    custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -104.39586147453548)
-    float3 xformOp:rotateXYZ = (56.426258, -6.679165e-14, -54.215538)
+    custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -29.14105392941709)
+    float3 xformOp:rotateXYZ = (71.471855, -1.1768052e-13, 28.107796)
     float3 xformOp:scale = (1, 1, 1)
-    double3 xformOp:translate = (23.156004844913575, -43.64047325675803, 18.722101917315097)
+    double3 xformOp:translate = (55.02584444863644, -10.925507161361505, 11.62683462943017)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 }
 
@@ -837,24 +838,25 @@ def PhysicsScene "PhysicsScene" (
 {
 }
 
-def "__floor_final" (
-    displayName = "1_floor_final"
-    prepend payload = @../1_floor_final.usd@
+def Xform "map" (
+    prepend references = @./map.usdc@
 )
 {
-    quatf xformOp:orient = (0.99954146, 0, 0, -0.030279808)
-    double xformOp:rotateX:unitsResolve = 90
-    float3 xformOp:scale = (1, 1, 1)
-    double3 xformOp:scale:unitsResolve = (0.01, 0.01, 0.01)
-    double3 xformOp:translate = (0, 0, 0)
-    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale", "xformOp:rotateX:unitsResolve", "xformOp:scale:unitsResolve"]
+    float3 xformOp:scale = (0.01, 0.01, 0.01)
+    double3 xformOp:translate = (0, 2469.47, 0)
+    uniform token[] xformOpOrder = ["xformOp:scale"]
 
-    over "mesh" (
-        prepend apiSchemas = ["PhysicsCollisionAPI", "PhysxCollisionAPI", "PhysxTriangleMeshCollisionAPI", "PhysicsMeshCollisionAPI"]
-    )
+    over "first_floor"
     {
-        uniform token physics:approximation = "none"
-        bool physics:collisionEnabled = 1
+        double3 xformOp:translate = (0, 2469.47, 0)
+        uniform token[] xformOpOrder = []
+
+        over "first_floor" (
+            prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI", "PhysxCollisionAPI", "PhysxTriangleMeshCollisionAPI"]
+        )
+        {
+            uniform token physics:approximation = "none"
+        }
     }
 }
 
