@@ -7,8 +7,8 @@
                 double radius = 11.950167083740235
             }
             dictionary Perspective = {
-                double3 position = (55.02584444863644, -10.925507161361505, 11.62683462943017)
-                double3 target = (42.00818486433609, 13.446421158671995, 2.3666687006998632)
+                double3 position = (44.606757683410024, 12.705976209701957, 0.5400944173146004)
+                double3 target = (41.78246823637518, 12.66214356216095, 0.4762819595899055)
             }
             dictionary Right = {
                 double3 position = (0, -5, 0)
@@ -63,7 +63,7 @@ def Xform "zeko" (
 {
     quatf xformOp:orient = (0, 0, 0, 1)
     float3 xformOp:scale = (1, 1, 1)
-    double3 xformOp:translate = (42.3, 12.65, 0.3)
+    double3 xformOp:translate = (42.3, 12.65, -0.44)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
     over "Geometry"
@@ -738,10 +738,10 @@ over "OmniverseKit_Persp" (
     float exposure:time = 0.02
     float focalLength = 18.147562
     float focusDistance = 400
-    custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -29.14105392941709)
-    float3 xformOp:rotateXYZ = (71.471855, -1.1768052e-13, 28.107796)
+    custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -2.8253502811835047)
+    float3 xformOp:rotateXYZ = (88.705826, -8.587498e-14, 90.88915)
     float3 xformOp:scale = (1, 1, 1)
-    double3 xformOp:translate = (55.02584444863644, -10.925507161361505, 11.62683462943017)
+    double3 xformOp:translate = (44.606757683410024, 12.705976209701957, 0.5400944173146004)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 }
 
