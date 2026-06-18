@@ -86,7 +86,7 @@ local_costmap:
       width: 3
       height: 3
       resolution: 0.02
-      robot_radius: 0.20
+      robot_radius: 0.10
       plugins: ["obstacle_layer", "inflation_layer"]
       obstacle_layer:
         plugin: nav2_costmap_2d::ObstacleLayer
@@ -104,8 +104,8 @@ local_costmap:
           obstacle_min_range: 0.5
       inflation_layer:
         plugin: nav2_costmap_2d::InflationLayer
-        cost_scaling_factor: 5.0
-        inflation_radius: 0.20
+        cost_scaling_factor: 10.0
+        inflation_radius: 0.10
       always_send_full_costmap: true
 
 global_costmap:
@@ -116,7 +116,7 @@ global_costmap:
       publish_frequency: 1.0
       global_frame: map
       robot_base_frame: base_link
-      robot_radius: 0.20
+      robot_radius: 0.10
       resolution: 0.02
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
@@ -139,8 +139,8 @@ global_costmap:
           obstacle_min_range: 0.0
       inflation_layer:
         plugin: nav2_costmap_2d::InflationLayer
-        cost_scaling_factor: 5.0
-        inflation_radius: 0.20
+        cost_scaling_factor: 10.0
+        inflation_radius: 0.10
       always_send_full_costmap: true
 
 map_server:
