@@ -7,18 +7,18 @@
                 double radius = 11.950167083740235
             }
             dictionary Perspective = {
-                double3 position = (44.606757683410024, 12.705976209701957, 0.5400944173146004)
-                double3 target = (41.78246823637518, 12.66214356216095, 0.4762819595899055)
+                double3 position = (41.02305049185001, 11.235083992924029, 14.011073591915478)
+                double3 target = (41.0438657849383, 11.255221790780922, 13.81818122249834)
             }
             dictionary Right = {
                 double3 position = (0, -5, 0)
                 double radius = 5
             }
             dictionary Top = {
-                double3 position = (0, 0, 5)
-                double radius = 19.657562255859375
+                double3 position = (12.925043992299466, 13.473547025984404, 4.999999999999998)
+                double radius = 69.63348999023438
             }
-            string boundCamera = "/OmniverseKit_Persp"
+            string boundCamera = "/OmniverseKit_Top"
         }
         string creator = "URDF USD Converter v0.1.2"
         dictionary metricsAssembler = {
@@ -34,6 +34,13 @@
             string authoring_layer = "./zeko.usda"
         }
         dictionary renderSettings = {
+            double "rtx:directLighting:sampledLighting:maxRayUnexposedIntensity" = 6399.9990234375
+            double "rtx:indirectDiffuse:maxRayUnexposedIntensity" = 6399.9990234375
+            double "rtx:pathtracing:fireflyFilter:maxPerEmissiveUnexposedIntensity" = 3199.99951171875
+            double "rtx:pathtracing:fireflyFilter:maxUnexposedIntensityPerSample" = 3199.99951171875
+            double "rtx:pathtracing:fireflyFilter:maxUnexposedIntensityPerSampleDiffuse" = 3199.99951171875
+            double "rtx:raytracing:inscattering:maxRTSampleUnexposedIntensity" = 204799.96875
+            double "rtx:translucency:maxRayUnexposedIntensity" = 19199.998046875
         }
     }
     defaultPrim = "zeko"
@@ -73,12 +80,12 @@ def Xform "zeko" (
             string isaac:nameOverride (
                 displayName = "Name Override"
             )
-            vector3f physics:angularVelocity = (0, 0, 0)
+            vector3f physics:angularVelocity = (-0.00020867561, 0.28086194, 0.00030865602)
             float physics:mass = 20
-            vector3f physics:velocity = (0, 0, 0)
-            quatf xformOp:orient = (1, 0, 0, 0)
+            vector3f physics:velocity = (0.00085681945, 0.0000026060504, -0.000008990766)
+            quatf xformOp:orient = (0.9999978, -2.6030513e-8, -0.002112041, 0.0000032174296)
             float3 xformOp:scale = (1, 1, 1)
-            float3 xformOp:translate = (0, 0, 0.49612427)
+            float3 xformOp:translate = (-0.0000030517579, 0.000011825561, 0.4419112)
             token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
             over "left_wheel_link"
@@ -86,10 +93,10 @@ def Xform "zeko" (
                 string isaac:nameOverride (
                     displayName = "Name Override"
                 )
-                vector3f physics:angularVelocity = (0, 0, 0)
-                vector3f physics:velocity = (0, 0, 0)
-                quatf xformOp:orient = (1, 0, -1.4901161e-8, 0)
-                double3 xformOp:translate = (-1.4432899320127035e-15, 0.29999989566142804, 0.15240001678466797)
+                vector3f physics:angularVelocity = (-0.0002088661, 0.31160322, 0.00030866064)
+                vector3f physics:velocity = (0.0008106092, 0.0000025703105, -0.000007711148)
+                quatf xformOp:orient = (1, 2.6014265e-8, 0.000028750545, 1.8081908e-8)
+                double3 xformOp:translate = (-0.000006447452051361324, 0.3000001907348633, 0.15240003168582916)
             }
 
             over "right_wheel_link"
@@ -97,10 +104,10 @@ def Xform "zeko" (
                 string isaac:nameOverride (
                     displayName = "Name Override"
                 )
-                vector3f physics:angularVelocity = (0, 0, 0)
-                vector3f physics:velocity = (0, 0, 0)
-                quatf xformOp:orient = (1, 0, -1.4901161e-8, 0)
-                double3 xformOp:translate = (1.6653345369377348e-15, -0.29999988976185077, 0.15240001678466797)
+                vector3f physics:angularVelocity = (-0.00020884459, 0.30813402, 0.0003086585)
+                vector3f physics:velocity = (0.00080737664, 0.0000025702898, -0.000009877695)
+                quatf xformOp:orient = (1, 2.597028e-8, 0.000015080619, 1.7964954e-8)
+                double3 xformOp:translate = (-0.000006472319000749849, -0.3000001907348633, 0.1523999273777008)
             }
 
             over "front_caster_link"
@@ -108,10 +115,10 @@ def Xform "zeko" (
                 string isaac:nameOverride (
                     displayName = "Name Override"
                 )
-                vector3f physics:angularVelocity = (0, 0, 0)
-                vector3f physics:velocity = (0, 0, 0)
-                quatf xformOp:orient = (1, -0, -0, 0)
-                double3 xformOp:translate = (0.4499999889351261, 0, 0.04500007629394531)
+                vector3f physics:angularVelocity = (-0.00020867561, 0.28086194, 0.00030865602)
+                vector3f physics:velocity = (0.0002918444, -2.4052963e-7, 0.002199291)
+                quatf xformOp:orient = (1, -1.4626453e-10, -0.000011867627, 1.8078836e-8)
+                double3 xformOp:translate = (0.4499954283237457, -2.01310896841278e-8, 0.04501066729426384)
             }
 
             over "rear_caster_link"
@@ -119,10 +126,10 @@ def Xform "zeko" (
                 string isaac:nameOverride (
                     displayName = "Name Override"
                 )
-                vector3f physics:angularVelocity = (0, 0, 0)
-                vector3f physics:velocity = (0, 0, 0)
-                quatf xformOp:orient = (1, -0, -0, 0)
-                double3 xformOp:translate = (-0.449999987223016, 0, 0.04500007629394531)
+                vector3f physics:angularVelocity = (-0.00020867561, 0.28086194, 0.00030865602)
+                vector3f physics:velocity = (0.0002732087, 0.0000045939287, -0.0022124294)
+                quatf xformOp:orient = (1, -1.4626453e-10, -0.000011867627, 1.8078836e-8)
+                double3 xformOp:translate = (-0.45000267028808594, 1.6728533225318643e-8, 0.044989295303821564)
             }
 
             over "support_frame_link"
@@ -130,17 +137,17 @@ def Xform "zeko" (
                 string isaac:nameOverride (
                     displayName = "Name Override"
                 )
-                vector3f physics:angularVelocity = (0, 0, 0)
-                vector3f physics:velocity = (0, 0, 0)
-                quatf xformOp:orient = (1, -0, -0, 0)
-                double3 xformOp:translate = (0, -3.590719943602494e-9, 0.22100019454956055)
+                vector3f physics:angularVelocity = (-0.00020867561, 0.28086194, 0.00030865602)
+                vector3f physics:velocity = (0.0018388866, 0.0000033402714, -0.000013142058)
+                quatf xformOp:orient = (1, 2.588431e-8, -0.00001186773, 1.8080884e-8)
+                double3 xformOp:translate = (-0.000006326519269350683, -8.430085074451199e-9, 0.22099994122982025)
 
                 over "pelvis_mount_link"
                 {
-                    vector3f physics:angularVelocity = (0, 0, 0)
-                    vector3f physics:velocity = (0, 0, 0)
-                    quatf xformOp:orient = (1, 0, 0, 0)
-                    double3 xformOp:translate = (2.2611681693707197e-8, 3.6969771244343974e-8, 0.28299999237060547)
+                    vector3f physics:angularVelocity = (-0.00020867561, 0.28086194, 0.00030865602)
+                    vector3f physics:velocity = (0.002905055, 0.0000041373687, -0.000017648641)
+                    quatf xformOp:orient = (1, 2.594937e-8, -0.000011859922, 4.9046715e-8)
+                    double3 xformOp:translate = (-0.00000911935876501957, -1.0789035442826389e-8, 0.28300002217292786)
                 }
 
                 def Lidar "Lidar"
@@ -172,14 +179,14 @@ def Xform "zeko" (
     {
         over "left_wheel_joint"
         {
-            float state:angular:physics:position = -1.4645563e-13
-            float state:angular:physics:velocity = -1.5918004e-13
+            float state:angular:physics:position = 0.004677694
+            float state:angular:physics:velocity = -0.030741267
         }
 
         over "right_wheel_joint"
         {
-            float state:angular:physics:position = 3.23605e-11
-            float state:angular:physics:velocity = -1.442567e-14
+            float state:angular:physics:position = 0.0030940187
+            float state:angular:physics:velocity = -0.027272081
         }
     }
 
@@ -497,7 +504,7 @@ def Xform "zeko" (
         {
             custom vector3d inputs:angularVelocity
             prepend vector3d inputs:angularVelocity.connect = </zeko/ActionGraph/isaac_compute_odometry_node.outputs:angularVelocity>
-            custom string inputs:chassisFrameId
+            custom string inputs:chassisFrameId = "odom"
             custom uint64 inputs:context
             custom uint inputs:execIn (
                 customData = {
@@ -508,7 +515,7 @@ def Xform "zeko" (
             custom vector3d inputs:linearVelocity
             prepend vector3d inputs:linearVelocity.connect = </zeko/ActionGraph/isaac_compute_odometry_node.outputs:linearVelocity>
             custom string inputs:nodeNamespace
-            custom string inputs:odomFrameId
+            custom string inputs:odomFrameId = "odom"
             custom quatd inputs:orientation
             prepend quatd inputs:orientation.connect = </zeko/ActionGraph/isaac_compute_odometry_node.outputs:orientation>
             custom vector3d inputs:position
@@ -661,7 +668,7 @@ def "Render" (
                 no_delete = true
             )
             {
-                rel camera = </OmniverseKit_Persp>
+                rel camera = </OmniverseKit_Top>
                 token omni:rtx:ambientOcclusion:denoiserMode = "none"
                 token omni:rtx:background:source:texture:textureMode = "repeatMirrored"
                 token omni:rtx:background:source:type = "domeLight"
@@ -676,14 +683,21 @@ def "Render" (
                 bool omni:rtx:post:registeredCompositing:invertToneMap = 1
                 bool omni:rtx:pt:adaptiveSampling:filterError = 0
                 uint omni:rtx:pt:adaptiveSampling:fixedSppIterations = 2
+                float omni:rtx:pt:fireflyFilter:maxPerEmissiveUnexposedIntensity = 3199.9995
+                float omni:rtx:pt:fireflyFilter:maxUnexposedIntensityPerSample = 3199.9995
+                float omni:rtx:pt:fireflyFilter:maxUnexposedIntensityPerSampleDiffuse = 3199.9995
                 uint omni:rtx:pt:maxSamplesPerLaunch = 2073600
                 uint omni:rtx:pt:mgpu:maxPixelsPerRegionExponent = 12
                 bool omni:rtx:reflections:denoiser:enabled = 0
                 token omni:rtx:rendermode = "RealTimePathTracing"
                 color3f omni:rtx:rt:ambientLight:color = (0.1, 0.1, 0.1)
                 bool omni:rtx:rt:demoire = 0
+                float omni:rtx:rt:directLighting:maxRayUnexposedIntensity = 6399.999
                 bool omni:rtx:rt:ecoMode:enabled
+                float omni:rtx:rt:indirectdiffuse:maxRayUnexposedIntensity = 6399.999
+                float omni:rtx:rt:inscattering:maxRTSampleUnexposedIntensity = 204799.97
                 bool omni:rtx:rt:lightcache:spatialCache:dontResolveConflicts = 1
+                float omni:rtx:rt:refractions:maxRayUnexposedIntensity = 19199.998
                 int omni:rtx:rt:sss:samples = 1
                 uint omni:rtx:rtpt:maxVolumeBounces = 15
                 float omni:rtx:rtpt:modulatingRoughnessThreshold = 0.08
@@ -738,10 +752,10 @@ over "OmniverseKit_Persp" (
     float exposure:time = 0.02
     float focalLength = 18.147562
     float focusDistance = 400
-    custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -2.8253502811835047)
-    float3 xformOp:rotateXYZ = (88.705826, -8.587498e-14, 90.88915)
+    custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -0.19505453982984844)
+    float3 xformOp:rotateXYZ = (-8.538991, -2.1627772e-13, 134.05223)
     float3 xformOp:scale = (1, 1, 1)
-    double3 xformOp:translate = (44.606757683410024, 12.705976209701957, 0.5400944173146004)
+    double3 xformOp:translate = (41.02305049185001, 11.235083992924029, 14.011073591915478)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 }
 
@@ -822,13 +836,13 @@ over "OmniverseKit_Top" (
     float exposure:fStop = 5
     float exposure:responsivity = 1.1026709
     float exposure:time = 0.02
-    float horizontalAperture = 196.57562
+    float horizontalAperture = 696.3349
     custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -5)
     token projection = "orthographic"
-    float verticalAperture = 196.57562
+    float verticalAperture = 696.3349
     float3 xformOp:rotateXYZ = (-1.2722219e-14, -7.016709e-15, -90)
     float3 xformOp:scale = (1, 1, 1)
-    double3 xformOp:translate = (0, 0, 5)
+    double3 xformOp:translate = (12.925043992299466, 13.473547025984404, 4.999999999999998)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 }
 

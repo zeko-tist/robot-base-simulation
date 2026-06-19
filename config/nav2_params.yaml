@@ -14,7 +14,7 @@ amcl:
     max_particles: 2000
     min_particles: 500
     robot_model_type: nav2_amcl::DifferentialMotionModel
-    scan_topic: /scan
+    scan_topic: /scan_base
     tf_broadcast: true
     transform_tolerance: 5.0
     update_min_a: 0.2
@@ -93,7 +93,7 @@ local_costmap:
         enabled: true
         observation_sources: scan
         scan:
-          topic: /scan
+          topic: /scan_base
           max_obstacle_height: 2.0
           clearing: true
           marking: true
@@ -128,7 +128,7 @@ global_costmap:
         enabled: true
         observation_sources: scan
         scan:
-          topic: /scan
+          topic: /scan_base
           max_obstacle_height: 2.0
           clearing: true
           marking: true
