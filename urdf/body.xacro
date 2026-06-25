@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!--
+  body.xacro — Visual-only torso body for ZEKO
+
+  Adds the ZEKO upper body as a purely visual link. No mass, no collision,
+  no effect on physics or navigation. Used so RViz shows the body mesh.
+
+  The body OBJ was analysed from the Fusion 360 export:
+    Width (CAD X):  50 cm  (0.03 m to 0.53 m in OBJ local space)
+    Depth (CAD Y):  25.7 cm (centred at 0)
+    Height (CAD Z): 77 cm  (bottom at -64 cm, top at +13 cm)
+
+  COORDINATE TRANSFORM APPLIED:
+    - Scale:    0.01   (cm → m)
+    - Rotation: -90° Z (cad_yaw, aligns OBJ Y-depth with ROS X-forward)
+    - Visual origin: xyz = (-P_cad.y, P_cad.x, -P_cad.z) * 0.01
+                         = (0, 0.28, 0.64) m
+      Where P_cad = (28, 0, -64) cm  (body bottom-centre in CAD frame)
+
+  The body_joint sits at the TOP of pelvis_mount_link (z=0.152 m above its
+  origin), so the body bottom aligns with z=0.656 m above base_link.
+
+  PREREQUISITES:
+    Copy zeko_body.obj and zeko_body.mtl into meshes/
+    (both files must be present; OBJ references the MTL for materials)
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Visual-only body link — no inertia, no collision -->
+  <link name="body_link">
+    <visual>
+      <!--
+        Visual origin:
+          xyz = (0, 0.28, 0.64)
+            0    = no forward/backward offset (OBJ Y-axis is already centred)
+            0.28 = centres the body laterally (OBJ X-centre is at 28 cm, not 0)
+            0.64 = lifts body so its bottom (OBJ Z=-64 cm) aligns with z=0 of body_link
+          rpy = (0, 0, -π/2)
+            Applies cad_yaw rotation so OBJ Y (depth/front-back) → ROS X (forward)
+      -->
+      <origin xyz="0 0.28 0.64" rpy="0 0 -1.5707963267948966"/>
+      <geometry>
+        <mesh filename="package://robot_base_simulation/meshes/zeko_body.obj"
+              scale="0.01 0.01 0.01"/>
+      </geometry>
+    </visual>
+    <!-- No collision — body is decorative, robot footprint is defined in Nav2 params -->
+    <!-- No inertial — fixed joint, mass handled by pelvis_mount_link -->
+  </link>
+
+  <!--
+    body_joint: fixed to pelvis_mount_link, placed at its top face.
+    pelvis_mount_link origin is at z=0.504 m above base_link.
+    pelvis_mount_link height = 0.152 m → top at z=0.656 m above base_link.
+    So xyz="0 0 0.152" places body_link at that top face.
+  -->
+  <joint name="body_joint" type="fixed">
+    <parent link="pelvis_mount_link"/>
+    <child  link="body_link"/>
+    <origin xyz="0 0 0.152" rpy="0 0 0"/>
+  </joint>
+
+</robot>

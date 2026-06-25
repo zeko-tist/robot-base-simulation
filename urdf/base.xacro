@@ -192,7 +192,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 ${cad_yaw}"/>
       <geometry>
-        <mesh filename="package://zeko_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://robot_base_simulation/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="zeko_chassis_grey"/>
     </visual>

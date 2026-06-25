@@ -1,7 +1,47 @@
-image: floor1_map.pgm
-mode: trinary
-resolution: 0.05
-origin: [-11.4, -6.29, 0]
-negate: 0
+# floor1_map.yaml — ROS2 occupancy map descriptor
+#
+# This file tells map_server where to find the map image and how to interpret it.
+# Place it in the same directory as the .pgm image file, or update `image:` to
+# use an absolute path.
+#
+# =====================================================================
+# HOW TO GENERATE FROM ISAAC SIM:
+# =====================================================================
+# Isaac Sim can export an occupancy map via:
+#   Extensions → Occupancy Map → Generate
+#   Output format: PNG or PGM
+#   Resolution: 0.05 m/px (matches Nav2 costmap resolution)
+#
+# OR use the Isaac ROS occupancy map generator:
+#   ros2 launch isaac_ros_occupancy_map_localizer occupancy_map_server.launch.py
+#
+# The map image conventions (REP-117):
+#   Pixel value 0   (black)   = occupied   (obstacle)
+#   Pixel value 205 (grey)    = unknown
+#   Pixel value 254 (white)   = free space
+#
+# negate: 0 → lighter pixels = more free (standard ROS convention)
+# negate: 1 → darker  pixels = more free (invert if your image is backwards)
+#
+# =====================================================================
+
+image: floor1_map.pgm          # Relative to this .yaml file, or use absolute path
+
+# Resolution: real-world size of each pixel in metres
+resolution: 0.05               # 0.05 m/px = 5 cm/px — standard for Nav2
+
+# Origin: (x, y, yaw) of the BOTTOM-LEFT pixel in the map frame
+# You MUST set this to match your Isaac Sim world origin.
+# In Isaac Sim: measure where the bottom-left of your exported map is
+# relative to the world origin (0, 0).
+# Positive x = East (forward in REP-103), Positive y = North (left)
+origin: [0.0, 0.0, 0.0]       # <<< UPDATE THIS to match your world offset
+
+# occupied_thresh: pixels brighter than this → free space
 occupied_thresh: 0.65
-free_thresh: 0.25
+
+# free_thresh: pixels darker than this → occupied
+free_thresh: 0.196
+
+# negate: 0 = lighter is free (standard), 1 = darker is free
+negate: 0

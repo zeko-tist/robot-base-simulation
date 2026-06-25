@@ -6,7 +6,7 @@ Standalone visualization launch file for ZEKO.
 
 Starts:
   - robot_state_publisher : publishes /tf and /robot_description, loaded
-                             by running xacro on urdf/zeko.xacro
+                             by running xacro on urdf/zeko_nav.xacro
   - joint_state_publisher_gui : provides sliders for the two wheel joints
                              (left_wheel_joint / right_wheel_joint) so the
                              model can be inspected without a running
@@ -15,9 +15,9 @@ Starts:
                              use_rviz is true (default)
 
 Usage:
-  ros2 launch zeko_description display.launch.py
-  ros2 launch zeko_description display.launch.py use_rviz:=false
-  ros2 launch zeko_description display.launch.py use_sim_time:=true
+  ros2 launch robot_base_simulation display.launch.py
+  ros2 launch robot_base_simulation display.launch.py use_rviz:=false
+  ros2 launch robot_base_simulation display.launch.py use_sim_time:=true
 """
 
 import os
@@ -36,8 +36,8 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
-    pkg_share = get_package_share_directory("zeko_description")
-    default_xacro_path = os.path.join(pkg_share, "urdf", "zeko.xacro")
+    pkg_share = get_package_share_directory("robot_base_simulation")
+    default_xacro_path = os.path.join(pkg_share, "urdf", "zeko_nav.xacro")
     default_rviz_config = os.path.join(pkg_share, "launch", "zeko.rviz")
 
     use_sim_time = LaunchConfiguration("use_sim_time")

@@ -1,11 +1,17 @@
 cmake_minimum_required(VERSION 3.8)
-project(zeko_description)
+project(robot_base_simulation)
 
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY urdf meshes config launch
+  DIRECTORY urdf meshes config launch scripts
   DESTINATION share/${PROJECT_NAME}
+)
+
+install(PROGRAMS
+  scripts/global_localization_trigger.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME global_localization_trigger
 )
 
 if(BUILD_TESTING)

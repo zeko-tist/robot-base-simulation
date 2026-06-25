@@ -33,7 +33,7 @@
       <visual>
         <origin xyz="${-x_sign * caster_x_offset} 0 ${-caster_radius}" rpy="0 0 ${cad_yaw}"/>
         <geometry>
-          <mesh filename="package://zeko_description/meshes/${prefix}_caster_fork.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://robot_base_simulation/meshes/${prefix}_caster_fork.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="zeko_caster_dark_grey"/>
       </visual>
@@ -41,7 +41,7 @@
       <visual>
         <origin xyz="${-x_sign * caster_x_offset} 0 ${-caster_radius}" rpy="0 0 ${cad_yaw}"/>
         <geometry>
-          <mesh filename="package://zeko_description/meshes/${prefix}_caster_wheel.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://robot_base_simulation/meshes/${prefix}_caster_wheel.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="zeko_wheel_black"/>
       </visual>

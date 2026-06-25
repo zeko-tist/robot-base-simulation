@@ -30,12 +30,12 @@
   <!-- NOTE: base.xacro must be included first +- it defines the shared
        xacro:property values and inertia macros used by every other
        module below. -->
-  <xacro:include filename="$(find zeko_description)/urdf/materials.xacro"/>
-  <xacro:include filename="$(find zeko_description)/urdf/base.xacro"/>
-  <xacro:include filename="$(find zeko_description)/urdf/wheels.xacro"/>
-  <xacro:include filename="$(find zeko_description)/urdf/casters.xacro"/>
-  <xacro:include filename="$(find zeko_description)/urdf/support_frame.xacro"/>
-  <xacro:include filename="$(find zeko_description)/urdf/pelvis_mount.xacro"/>
+  <xacro:include filename="$(find robot_base_simulation)/urdf/materials.xacro"/>
+  <xacro:include filename="$(find robot_base_simulation)/urdf/base.xacro"/>
+  <xacro:include filename="$(find robot_base_simulation)/urdf/wheels.xacro"/>
+  <xacro:include filename="$(find robot_base_simulation)/urdf/casters.xacro"/>
+  <xacro:include filename="$(find robot_base_simulation)/urdf/support_frame.xacro"/>
+  <xacro:include filename="$(find robot_base_simulation)/urdf/pelvis_mount.xacro"/>
 
   <!-- =====================================================================
        ros2_control HARDWARE INTERFACE

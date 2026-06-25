@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!--
+  lidar.xacro — RTX LiDAR sensor frame for ZEKO
+
+  Adds lidar_link as a child of base_link. The frame_id in every
+  sensor_msgs/LaserScan published by Isaac Sim MUST equal "lidar_link".
+
+  Position: z=0.68 m above base_link = the junction between the
+  mobile base support structure (top at 0.656 m) and the torso body bottom.
+  This gives the best 360° LiDAR coverage with no body blocking the scan.
+
+  If you move the physical LiDAR prim in Isaac Sim, update lidar_z here,
+  rebuild the URDF, and rebuild the package.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:property name="lidar_x"   value="0.0"/>
+  <xacro:property name="lidar_y"   value="0.0"/>
+  <xacro:property name="lidar_z"   value="0.68"/>
+  <xacro:property name="lidar_yaw" value="0.0"/>
+
+  <link name="lidar_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.06"/>
+      </geometry>
+      <material name="lidar_grey">
+        <color rgba="0.3 0.3 0.3 0.8"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.001"/>
+      <inertia ixx="0.000001" ixy="0.0" ixz="0.0"
+               iyy="0.000001" iyz="0.0" izz="0.000001"/>
+    </inertial>
+  </link>
+
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="lidar_link"/>
+    <origin xyz="${lidar_x} ${lidar_y} ${lidar_z}" rpy="0 0 ${lidar_yaw}"/>
+  </joint>
+
+</robot>

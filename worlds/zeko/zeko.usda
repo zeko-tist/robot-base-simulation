@@ -7,16 +7,16 @@
                 double radius = 11.950167083740235
             }
             dictionary Perspective = {
-                double3 position = (41.02305049185001, 11.235083992924029, 14.011073591915478)
-                double3 target = (41.0438657849383, 11.255221790780922, 13.81818122249834)
+                double3 position = (20.98823294232562, 23.974501765745533, 13.691228278764049)
+                double3 target = (68.34265351236027, -0.935750187710731, -14.786771609542422)
             }
             dictionary Right = {
                 double3 position = (0, -5, 0)
                 double radius = 5
             }
             dictionary Top = {
-                double3 position = (12.925043992299466, 13.473547025984404, 4.999999999999998)
-                double radius = 69.63348999023438
+                double3 position = (42.12302731804552, 12.497364197660357, 50000.32985753378)
+                double radius = 2.7937854766845702
             }
             string boundCamera = "/OmniverseKit_Top"
         }
@@ -68,7 +68,8 @@ def Xform "zeko" (
     append variantSets = "Physics"
 )
 {
-    quatf xformOp:orient = (0, 0, 0, 1)
+    token visibility = "inherited"
+    quatf xformOp:orient = (6.123234e-17, 0, 0, 1)
     float3 xformOp:scale = (1, 1, 1)
     double3 xformOp:translate = (42.3, 12.65, -0.44)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
@@ -144,10 +145,24 @@ def Xform "zeko" (
 
                 over "pelvis_mount_link"
                 {
+                    string isaac:nameOverride (
+                        displayName = "Name Override"
+                    )
                     vector3f physics:angularVelocity = (-0.00020867561, 0.28086194, 0.00030865602)
                     vector3f physics:velocity = (0.002905055, 0.0000041373687, -0.000017648641)
                     quatf xformOp:orient = (1, 2.594937e-8, -0.000011859922, 4.9046715e-8)
                     double3 xformOp:translate = (-0.00000911935876501957, -1.0789035442826389e-8, 0.28300002217292786)
+
+                    def Xform "body_visual" (
+                        prepend references = @/home/zeko-sim/Desktop/robot-base-simulation/meshes/zeko_body.usd@
+                    )
+                    {
+                        uniform token purpose = "render"
+                        float xformOp:rotateZ = -90
+                        float3 xformOp:scale = (0.01, 0.01, 0.01)
+                        double3 xformOp:translate = (0, 0.28, 0.792)
+                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateZ", "xformOp:scale"]
+                    }
                 }
 
                 def Lidar "Lidar"
@@ -167,8 +182,8 @@ def Xform "zeko" (
                     token visibility = "inherited"
                     quatd xformOp:orient = (1, 0, 0, 0)
                     double3 xformOp:scale = (1, 1, 1)
-                    double3 xformOp:translate = (0, 0.1, 0)
-                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+                    double3 xformOp:translate = (0, 0, 0.459)
+                    uniform token[] xformOpOrder = ["xformOp:translate"]
                     float yawOffset = 0
                 }
             }
@@ -301,7 +316,7 @@ def Xform "zeko" (
             custom string inputs:nodeNamespace
             custom double4[] inputs:orientations
             custom token[] inputs:parentFrames
-            custom rel inputs:parentPrim (
+            custom rel inputs:parentPrim = </odom> (
                 customData = {
                     dictionary omni = {
                         dictionary graph = {
@@ -668,6 +683,52 @@ def "Render" (
                 no_delete = true
             )
             {
+                rel camera = </OmniverseKit_Persp>
+                token omni:rtx:ambientOcclusion:denoiserMode = "none"
+                token omni:rtx:background:source:texture:textureMode = "repeatMirrored"
+                token omni:rtx:background:source:type = "domeLight"
+                bool omni:rtx:debug:view:pixelDebug:enableFixedTextPos = 1
+                token omni:rtx:directLighting:sampledLighting:denoisingTechnique = "None"
+                bool omni:rtx:dlss:frameGeneration = 0
+                float3 omni:rtx:domeLight:rotationAxis = (0, 0, 1)
+                bool omni:rtx:indirectDiffuse:denoiser:enabled = 0
+                bool omni:rtx:material:db:syncLoads = 1
+                token omni:rtx:post:dlss:execMode = "performance"
+                bool omni:rtx:post:registeredCompositing:invertColorCorrection = 1
+                bool omni:rtx:post:registeredCompositing:invertToneMap = 1
+                bool omni:rtx:pt:adaptiveSampling:filterError = 0
+                uint omni:rtx:pt:adaptiveSampling:fixedSppIterations = 2
+                float omni:rtx:pt:fireflyFilter:maxPerEmissiveUnexposedIntensity = 3199.9995
+                float omni:rtx:pt:fireflyFilter:maxUnexposedIntensityPerSample = 3199.9995
+                float omni:rtx:pt:fireflyFilter:maxUnexposedIntensityPerSampleDiffuse = 3199.9995
+                uint omni:rtx:pt:maxSamplesPerLaunch = 2073600
+                uint omni:rtx:pt:mgpu:maxPixelsPerRegionExponent = 12
+                bool omni:rtx:reflections:denoiser:enabled = 0
+                token omni:rtx:rendermode = "RealTimePathTracing"
+                color3f omni:rtx:rt:ambientLight:color = (0.1, 0.1, 0.1)
+                bool omni:rtx:rt:demoire = 0
+                float omni:rtx:rt:directLighting:maxRayUnexposedIntensity = 6399.999
+                bool omni:rtx:rt:ecoMode:enabled
+                float omni:rtx:rt:indirectdiffuse:maxRayUnexposedIntensity = 6399.999
+                float omni:rtx:rt:inscattering:maxRTSampleUnexposedIntensity = 204799.97
+                bool omni:rtx:rt:lightcache:spatialCache:dontResolveConflicts = 1
+                float omni:rtx:rt:refractions:maxRayUnexposedIntensity = 19199.998
+                int omni:rtx:rt:sss:samples = 1
+                uint omni:rtx:rtpt:maxVolumeBounces = 15
+                float omni:rtx:rtpt:modulatingRoughnessThreshold = 0.08
+                bool omni:rtx:scene:hydra:materialSyncLoads = 1
+                bool omni:rtx:scene:hydra:mdlMaterialWarmup = 1
+                rel orderedVars = </Render/Vars/LdrColor>
+                custom bool overrideClipRange = 0
+                uniform int2 resolution = (1280, 720)
+            }
+
+            def RenderProduct "omni_kit_widget_viewport_ViewportTexture_1" (
+                prepend apiSchemas = ["OmniRtxSettingsCommonAdvancedAPI_1", "OmniRtxSettingsRtAdvancedAPI_1", "OmniRtxSettingsPtAdvancedAPI_1", "OmniRtxPostColorGradingAPI_1", "OmniRtxPostChromaticAberrationAPI_1", "OmniRtxPostBloomPhysicalAPI_1", "OmniRtxPostMatteObjectAPI_1", "OmniRtxPostCompositingAPI_1", "OmniRtxPostDofAPI_1", "OmniRtxPostMotionBlurAPI_1", "OmniRtxPostTvNoiseAPI_1", "OmniRtxPostTonemapIrayReinhardAPI_1", "OmniRtxPostDebugSettingsAPI_1", "OmniRtxDebugSettingsAPI_1"]
+                hide_in_stage_window = true
+                no_delete = true
+            )
+            {
                 rel camera = </OmniverseKit_Top>
                 token omni:rtx:ambientOcclusion:denoiserMode = "none"
                 token omni:rtx:background:source:texture:textureMode = "repeatMirrored"
@@ -715,7 +776,10 @@ def "Render" (
         no_delete = true
     )
     {
-        rel products = </Render/OmniverseKit/HydraTextures/omni_kit_widget_viewport_ViewportTexture_0>
+        rel products = [
+            </Render/OmniverseKit/HydraTextures/omni_kit_widget_viewport_ViewportTexture_0>,
+            </Render/OmniverseKit/HydraTextures/omni_kit_widget_viewport_ViewportTexture_1>,
+        ]
     }
 
     def "Vars"
@@ -752,10 +816,10 @@ over "OmniverseKit_Persp" (
     float exposure:time = 0.02
     float focalLength = 18.147562
     float focusDistance = 400
-    custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -0.19505453982984844)
-    float3 xformOp:rotateXYZ = (-8.538991, -2.1627772e-13, 134.05223)
+    custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -60.61318567396678)
+    float3 xformOp:rotateXYZ = (61.976624, -3.2441657e-13, -117.7461)
     float3 xformOp:scale = (1, 1, 1)
-    double3 xformOp:translate = (41.02305049185001, 11.235083992924029, 14.011073591915478)
+    double3 xformOp:translate = (20.98823294232562, 23.974501765745533, 13.691228278764049)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 }
 
@@ -836,13 +900,13 @@ over "OmniverseKit_Top" (
     float exposure:fStop = 5
     float exposure:responsivity = 1.1026709
     float exposure:time = 0.02
-    float horizontalAperture = 696.3349
-    custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -5)
+    float horizontalAperture = 27.937855
+    custom uniform vector3d omni:kit:centerOfInterest = (0, 0, -50000)
     token projection = "orthographic"
-    float verticalAperture = 696.3349
+    float verticalAperture = 27.937855
     float3 xformOp:rotateXYZ = (-1.2722219e-14, -7.016709e-15, -90)
     float3 xformOp:scale = (1, 1, 1)
-    double3 xformOp:translate = (12.925043992299466, 13.473547025984404, 4.999999999999998)
+    double3 xformOp:translate = (42.12302731804552, 12.497364197660357, 50000.32985753378)
     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateXYZ", "xformOp:scale"]
 }
 
@@ -870,6 +934,392 @@ def Xform "map" (
         )
         {
             uniform token physics:approximation = "none"
+        }
+    }
+}
+
+def Xform "odom"
+{
+}
+
+def "World"
+{
+    def OmniGraph "ActionGraph"
+    {
+        token evaluationMode = "Automatic"
+        token evaluator:type = "execution"
+        token fabricCacheBacking = "StageWithoutHistory"
+        int2 fileFormatVersion = (1, 9)
+        token pipelineStage = "pipelineStageSimulation"
+
+        def OmniGraphNode "OnPlaybackTick"
+        {
+            token node:type = "omni.graph.action.OnPlaybackTick"
+            int node:typeVersion = 2
+            custom double outputs:deltaSeconds
+            custom double outputs:frame
+            custom uint outputs:tick (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            custom double outputs:time
+        }
+
+        def OmniGraphNode "ROS2Context"
+        {
+            custom uchar inputs:domain_id = 0
+            custom bool inputs:useDomainIDEnvVar
+            token node:type = "isaacsim.ros2.bridge.ROS2Context"
+            int node:typeVersion = 2
+            custom uint64 outputs:context
+        }
+
+        def OmniGraphNode "PublishClock"
+        {
+            custom uint64 inputs:context
+            delete uint64 inputs:context.connect = </World/ActionGraph/ROS2Context.outputs:context>
+            prepend uint64 inputs:context.connect = </World/ActionGraph/ROS2Context.outputs:context>
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            prepend uint inputs:execIn.connect = </World/ActionGraph/OnPlaybackTick.outputs:tick>
+            custom string inputs:nodeNamespace
+            custom string inputs:qosProfile
+            custom uint64 inputs:queueSize
+            custom double inputs:timeStamp
+            prepend double inputs:timeStamp.connect = </World/ActionGraph/OnPlaybackTick.outputs:time>
+            custom string inputs:topicName = "clock"
+            token node:type = "isaacsim.ros2.bridge.ROS2PublishClock"
+            int node:typeVersion = 1
+        }
+
+        def OmniGraphNode "ComputeOdom"
+        {
+            custom rel inputs:chassisPrim = </zeko/Geometry/base_link> (
+                customData = {
+                    dictionary omni = {
+                        dictionary graph = {
+                            string relType = "target"
+                        }
+                    }
+                }
+            )
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            prepend uint inputs:execIn.connect = </World/ActionGraph/OnPlaybackTick.outputs:tick>
+            token node:type = "isaacsim.core.nodes.IsaacComputeOdometry"
+            int node:typeVersion = 1
+            custom vector3d outputs:angularAcceleration
+            custom vector3d outputs:angularVelocity
+            custom uint outputs:execOut (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            custom vector3d outputs:globalLinearAcceleration
+            custom vector3d outputs:globalLinearVelocity
+            custom vector3d outputs:linearAcceleration
+            custom vector3d outputs:linearVelocity
+            custom quatd outputs:orientation
+            custom vector3d outputs:position
+        }
+
+        def OmniGraphNode "PublishOdom"
+        {
+            custom vector3d inputs:angularVelocity
+            prepend vector3d inputs:angularVelocity.connect = </World/ActionGraph/ComputeOdom.outputs:angularVelocity>
+            custom string inputs:chassisFrameId = "base_link"
+            custom uint64 inputs:context
+            prepend uint64 inputs:context.connect = </World/ActionGraph/ROS2Context.outputs:context>
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            prepend uint inputs:execIn.connect = </World/ActionGraph/ComputeOdom.outputs:execOut>
+            custom vector3d inputs:linearVelocity
+            prepend vector3d inputs:linearVelocity.connect = </World/ActionGraph/ComputeOdom.outputs:linearVelocity>
+            custom string inputs:nodeNamespace
+            custom string inputs:odomFrameId = "odom"
+            custom quatd inputs:orientation
+            prepend quatd inputs:orientation.connect = </World/ActionGraph/ComputeOdom.outputs:orientation>
+            custom vector3d inputs:position
+            prepend vector3d inputs:position.connect = </World/ActionGraph/ComputeOdom.outputs:position>
+            custom bool inputs:publishRawVelocities
+            custom string inputs:qosProfile
+            custom uint64 inputs:queueSize
+            custom vector3d inputs:robotFront
+            custom double inputs:timeStamp
+            prepend double inputs:timeStamp.connect = </World/ActionGraph/OnPlaybackTick.outputs:time>
+            custom string inputs:topicName = "odom"
+            token node:type = "isaacsim.ros2.bridge.ROS2PublishOdometry"
+            int node:typeVersion = 1
+        }
+
+        def OmniGraphNode "PublishTF"
+        {
+            custom string inputs:childFrameId = "base_link"
+            custom uint64 inputs:context
+            prepend uint64 inputs:context.connect = </World/ActionGraph/ROS2Context.outputs:context>
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            prepend uint inputs:execIn.connect = </World/ActionGraph/ComputeOdom.outputs:execOut>
+            custom string inputs:nodeNamespace
+            custom string inputs:parentFrameId = "odom"
+            custom string inputs:qosProfile
+            custom uint64 inputs:queueSize
+            custom quatd inputs:rotation
+            prepend quatd inputs:rotation.connect = </World/ActionGraph/ComputeOdom.outputs:orientation>
+            custom bool inputs:staticPublisher
+            custom double inputs:timeStamp
+            prepend double inputs:timeStamp.connect = </World/ActionGraph/OnPlaybackTick.outputs:time>
+            custom string inputs:topicName = "tf"
+            custom vector3d inputs:translation
+            prepend vector3d inputs:translation.connect = </World/ActionGraph/ComputeOdom.outputs:position>
+            token node:type = "isaacsim.ros2.bridge.ROS2PublishRawTransformTree"
+            int node:typeVersion = 1
+        }
+
+        def OmniGraphNode "ReadJointState"
+        {
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            prepend uint inputs:execIn.connect = </World/ActionGraph/OnPlaybackTick.outputs:tick>
+            custom rel inputs:prim = </zeko/Geometry/base_link> (
+                customData = {
+                    dictionary omni = {
+                        dictionary graph = {
+                            string relType = "target"
+                        }
+                    }
+                }
+            )
+            token node:type = "isaacsim.sensors.physics.IsaacReadJointState"
+            int node:typeVersion = 1
+            custom uint outputs:execOut (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            custom uchar[] outputs:jointDofTypes
+            custom double[] outputs:jointEfforts
+            custom token[] outputs:jointNames
+            custom double[] outputs:jointPositions
+            custom double[] outputs:jointVelocities
+            custom float outputs:sensorTime
+            custom float outputs:stageMetersPerUnit
+        }
+
+        def OmniGraphNode "PublishJointState"
+        {
+            custom uint64 inputs:context
+            prepend uint64 inputs:context.connect = </World/ActionGraph/ROS2Context.outputs:context>
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            prepend uint inputs:execIn.connect = </World/ActionGraph/ReadJointState.outputs:execOut>
+            custom uchar[] inputs:jointDofTypes
+            prepend uchar[] inputs:jointDofTypes.connect = </World/ActionGraph/ReadJointState.outputs:jointDofTypes>
+            custom double[] inputs:jointEfforts
+            prepend double[] inputs:jointEfforts.connect = </World/ActionGraph/ReadJointState.outputs:jointEfforts>
+            custom token[] inputs:jointNames
+            prepend token[] inputs:jointNames.connect = </World/ActionGraph/ReadJointState.outputs:jointNames>
+            custom double[] inputs:jointPositions
+            prepend double[] inputs:jointPositions.connect = </World/ActionGraph/ReadJointState.outputs:jointPositions>
+            custom double[] inputs:jointVelocities
+            prepend double[] inputs:jointVelocities.connect = </World/ActionGraph/ReadJointState.outputs:jointVelocities>
+            custom string inputs:nodeNamespace
+            custom string inputs:qosProfile
+            custom uint64 inputs:queueSize
+            custom float inputs:sensorTime
+            prepend float inputs:sensorTime.connect = </World/ActionGraph/ReadJointState.outputs:sensorTime>
+            custom float inputs:stageMetersPerUnit
+            prepend float inputs:stageMetersPerUnit.connect = </World/ActionGraph/ReadJointState.outputs:stageMetersPerUnit>
+            custom rel inputs:targetPrim = </zeko/Geometry/base_link> (
+                customData = {
+                    dictionary omni = {
+                        dictionary graph = {
+                            string relType = "target"
+                        }
+                    }
+                }
+            )
+            custom double inputs:timeStamp
+            custom string inputs:topicName = "joint_states"
+            token node:type = "isaacsim.ros2.bridge.ROS2PublishJointState"
+            int node:typeVersion = 1
+        }
+
+        def OmniGraphNode "SubTwist"
+        {
+            custom uint64 inputs:context
+            prepend uint64 inputs:context.connect = </World/ActionGraph/ROS2Context.outputs:context>
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            prepend uint inputs:execIn.connect = </World/ActionGraph/OnPlaybackTick.outputs:tick>
+            custom string inputs:nodeNamespace
+            custom string inputs:qosProfile
+            custom uint64 inputs:queueSize
+            custom string inputs:topicName = "cmd_vel"
+            token node:type = "isaacsim.ros2.bridge.ROS2SubscribeTwist"
+            int node:typeVersion = 1
+            custom vector3d outputs:angularVelocity
+            custom uint outputs:execOut (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            custom vector3d outputs:linearVelocity
+        }
+
+        def OmniGraphNode "DiffController"
+        {
+            custom double inputs:angularVelocity
+            custom double inputs:dt
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            delete uint inputs:execIn.connect = </World/ActionGraph/SubTwist.outputs:execOut>
+            prepend uint inputs:execIn.connect = </World/ActionGraph/SubTwist.outputs:execOut>
+            custom double inputs:linearVelocity
+            custom double inputs:maxAcceleration
+            custom double inputs:maxAngularAcceleration
+            custom double inputs:maxAngularSpeed
+            custom double inputs:maxDeceleration
+            custom double inputs:maxLinearSpeed = 1
+            custom double inputs:maxWheelSpeed
+            custom double inputs:wheelDistance = 0.6
+            custom double inputs:wheelRadius = 0.1524
+            token node:type = "isaacsim.robot.wheeled_robots.DifferentialController"
+            int node:typeVersion = 1
+            custom double[] outputs:velocityCommand
+        }
+
+        def OmniGraphNode "ArtController"
+        {
+            custom double[] inputs:effortCommand
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            prepend uint inputs:execIn.connect = </World/ActionGraph/OnPlaybackTick.outputs:tick>
+            custom int[] inputs:jointIndices
+            custom token[] inputs:jointNames = ["left_wheel_joint", "right_wheel_joint"]
+            custom double[] inputs:positionCommand
+            custom string inputs:robotPath = "/zeko/Geometry/base_link"
+            custom rel inputs:targetPrim (
+                customData = {
+                    dictionary omni = {
+                        dictionary graph = {
+                            string relType = "target"
+                        }
+                    }
+                }
+            )
+            custom double[] inputs:velocityCommand
+            prepend double[] inputs:velocityCommand.connect = </World/ActionGraph/DiffController.outputs:velocityCommand>
+            token node:type = "isaacsim.core.nodes.IsaacArticulationController"
+            int node:typeVersion = 1
+        }
+
+        def OmniGraphNode "ReadLidarBeams"
+        {
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            prepend uint inputs:execIn.connect = </World/ActionGraph/OnPlaybackTick.outputs:tick>
+            custom rel inputs:lidarPrim = </zeko/Geometry/base_link/support_frame_link/Lidar> (
+                customData = {
+                    dictionary omni = {
+                        dictionary graph = {
+                            string relType = "target"
+                        }
+                    }
+                }
+            )
+            token node:type = "isaacsim.sensors.physx.IsaacReadLidarBeams"
+            int node:typeVersion = 1
+            custom float2 outputs:azimuthRange
+            custom float[] outputs:beamTimeData
+            custom float2 outputs:depthRange
+            custom uint outputs:execOut (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            custom float outputs:horizontalFov
+            custom float outputs:horizontalResolution
+            custom uchar[] outputs:intensitiesData
+            custom float[] outputs:linearDepthData
+            custom int outputs:numCols
+            custom int outputs:numRows
+            custom float outputs:rotationRate
+            custom float outputs:verticalFov
+            custom float outputs:verticalResolution
+            custom float2 outputs:zenithRange
+        }
+
+        def OmniGraphNode "PublishScan"
+        {
+            custom float2 inputs:azimuthRange
+            prepend float2 inputs:azimuthRange.connect = </World/ActionGraph/ReadLidarBeams.outputs:azimuthRange>
+            custom uint64 inputs:bufferSize
+            custom uint64 inputs:context
+            prepend uint64 inputs:context.connect = </World/ActionGraph/ROS2Context.outputs:context>
+            custom uint64 inputs:dataPtr
+            custom float2 inputs:depthRange
+            prepend float2 inputs:depthRange.connect = </World/ActionGraph/ReadLidarBeams.outputs:depthRange>
+            custom uint inputs:execIn (
+                customData = {
+                    bool isExecution = 1
+                }
+            )
+            prepend uint inputs:execIn.connect = </World/ActionGraph/ReadLidarBeams.outputs:execOut>
+            custom string inputs:frameId = "lidar_link"
+            custom float inputs:horizontalFov
+            prepend float inputs:horizontalFov.connect = </World/ActionGraph/ReadLidarBeams.outputs:horizontalFov>
+            custom float inputs:horizontalResolution
+            prepend float inputs:horizontalResolution.connect = </World/ActionGraph/ReadLidarBeams.outputs:horizontalResolution>
+            custom uchar[] inputs:intensitiesData
+            prepend uchar[] inputs:intensitiesData.connect = </World/ActionGraph/ReadLidarBeams.outputs:intensitiesData>
+            custom float[] inputs:linearDepthData
+            prepend float[] inputs:linearDepthData.connect = </World/ActionGraph/ReadLidarBeams.outputs:linearDepthData>
+            custom string inputs:nodeNamespace
+            custom int inputs:numCols
+            prepend int inputs:numCols.connect = </World/ActionGraph/ReadLidarBeams.outputs:numCols>
+            custom int inputs:numRows
+            prepend int inputs:numRows.connect = </World/ActionGraph/ReadLidarBeams.outputs:numRows>
+            custom string inputs:qosProfile
+            custom uint64 inputs:queueSize
+            custom float inputs:rotationRate
+            prepend float inputs:rotationRate.connect = </World/ActionGraph/ReadLidarBeams.outputs:rotationRate>
+            custom double inputs:timeStamp
+            prepend double inputs:timeStamp.connect = </World/ActionGraph/OnPlaybackTick.outputs:time>
+            custom string inputs:topicName = "scan"
+            token node:type = "isaacsim.ros2.bridge.ROS2PublishLaserScan"
+            int node:typeVersion = 3
         }
     }
 }

@@ -38,7 +38,7 @@
       <visual>
         <origin xyz="0 ${-reflect * wheel_separation / 2.0} ${-wheel_radius}" rpy="0 0 ${cad_yaw}"/>
         <geometry>
-          <mesh filename="package://zeko_description/meshes/${prefix}_wheel_link.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://robot_base_simulation/meshes/${prefix}_wheel_link.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="zeko_wheel_black"/>
       </visual>

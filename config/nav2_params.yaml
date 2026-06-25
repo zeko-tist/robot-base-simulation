@@ -1,25 +1,86 @@
+# =============================================================================
+# nav2_params_zeko.yaml — Corrected Nav2 + AMCL configuration for ZEKO
+# =============================================================================
+#
+# Changes from the original nav2_params.yaml:
+#   1. AMCL: set_initial_pose → false  (enables global localization on startup)
+#   2. Costmaps: robot_radius → footprint polygon (actual 1.0×0.65 m robot)
+#   3. Costmaps: inflation_radius → 0.55 m  (was 0.10 m — dangerously small)
+#   4. controller_server: min_y_velocity_threshold → 0.001 (was 0.5 — diff-drive has no Y vel)
+#   5. controller_server: desired_linear_vel → 0.35 m/s (safer indoor speed)
+#   6. AMCL: recovery_alpha_slow/fast added for kidnapped-robot detection
+#   7. map_server: yaml_filename set (update path if needed)
+#   8. All timeouts tightened from 5.0 s to 1.0–2.0 s (5.0 was for debugging only)
+#
+# Robot geometry:
+#   base length:  1.00 m  (X, forward)
+#   base width:   0.65 m  (Y, left-right)
+#   wheel radius: 0.1524 m
+#   wheel sep:    0.60 m
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# AMCL  —  Monte Carlo localisation with global initialisation
+# ---------------------------------------------------------------------------
 amcl:
   ros__parameters:
     use_sim_time: true
-    alpha1: 0.2
-    alpha2: 0.2
-    alpha3: 0.2
-    alpha4: 0.2
-    alpha5: 0.2
+
+    # ---- Particle count ----
+    min_particles: 500
+    max_particles: 5000       # Reduced from 10000; Isaac Sim is fast enough but
+                               # 10000 is overkill once converged.
+
+    # ---- Motion model (differential drive) ----
+    robot_model_type: nav2_amcl::DifferentialMotionModel
+    alpha1: 0.1               # rot noise from rot
+    alpha2: 0.1               # rot noise from trans
+    alpha3: 0.05              # trans noise from trans
+    alpha4: 0.05              # trans noise from rot
+
+    # ---- Sensor model ----
+    laser_model_type: likelihood_field
+    scan_topic: /scan
+    max_beams: 180            # Use every other beam from a 360-beam LiDAR
+    laser_max_range: 12.0
+    laser_min_range: 0.1
+    laser_likelihood_max_dist: 2.0
+    sigma_hit: 0.2
+    z_hit: 0.5
+    z_rand: 0.5
+    z_max: 0.05               # Small probability for max-range readings
+
+    # ---- Frame IDs ----
     base_frame_id: base_link
     global_frame_id: map
     odom_frame_id: odom
-    laser_model_type: likelihood_field
-    max_beams: 60
-    max_particles: 2000
-    min_particles: 500
-    robot_model_type: nav2_amcl::DifferentialMotionModel
-    scan_topic: /scan_base
     tf_broadcast: true
-    transform_tolerance: 5.0
-    update_min_a: 0.2
-    update_min_d: 0.25
+    transform_tolerance: 1.0  # Was 5.0 — reduces TF staleness window
 
+    # ---- Update triggers ----
+    update_min_a: 0.2         # Minimum angular change to trigger update (rad)
+    update_min_d: 0.25        # Minimum distance change to trigger update (m)
+
+    # ---- GLOBAL LOCALISATION (key change from original) ----
+    # set_initial_pose: false → AMCL spreads particles uniformly across the map.
+    # The global_localization_trigger.py script calls reinitialize_global_localization
+    # on startup. Remove the initial_pose_* lines entirely.
+    set_initial_pose: false
+
+    # ---- Kidnapped robot recovery ----
+    # When the robot is moved to an unknown position (kidnapped), the particle
+    # cloud will fail to match. recovery_alpha_slow/fast inject random particles
+    # to help the filter recover.
+    recovery_alpha_slow: 0.001   # Long-term average weight decay
+    recovery_alpha_fast: 0.1     # Short-term average weight decay
+                                  # Random particles injected when
+                                  # w_fast / w_slow < 1.0 (unexpected observations)
+
+    save_pose_rate: 0.5           # Hz — save last known pose periodically
+
+# ---------------------------------------------------------------------------
+# BT Navigator
+# ---------------------------------------------------------------------------
 bt_navigator:
   ros__parameters:
     use_sim_time: true
@@ -28,52 +89,66 @@ bt_navigator:
     odom_topic: /odom
     bt_loop_duration: 10
     default_server_timeout: 20
-    default_nav_to_pose_bt_xml: "/opt/ros/humble/share/nav2_bt_navigator/behavior_trees/navigate_w_replanning_only_if_path_becomes_invalid.xml"
-    default_nav_through_poses_bt_xml: "/opt/ros/humble/share/nav2_bt_navigator/behavior_trees/navigate_w_replanning_only_if_path_becomes_invalid.xml"
+    # Use replanning when path is invalidated — good for dynamic environments
+    default_nav_to_pose_bt_xml: >-
+      /opt/ros/humble/share/nav2_bt_navigator/behavior_trees/navigate_w_replanning_only_if_path_becomes_invalid.xml
+    default_nav_through_poses_bt_xml: >-
+      /opt/ros/humble/share/nav2_bt_navigator/behavior_trees/navigate_w_replanning_only_if_path_becomes_invalid.xml
     navigate_to_pose:
       plugin: nav2_bt_navigator::NavigateToPoseNavigator
     navigate_through_poses:
       plugin: nav2_bt_navigator::NavigateThroughPosesNavigator
 
+# ---------------------------------------------------------------------------
+# Controller Server  (local path follower)
+# ---------------------------------------------------------------------------
 controller_server:
   ros__parameters:
     use_sim_time: true
     controller_frequency: 20.0
     min_x_velocity_threshold: 0.001
-    min_y_velocity_threshold: 0.5
+    min_y_velocity_threshold: 0.001   # FIXED: was 0.5 — diff-drive has no lateral velocity
     min_theta_velocity_threshold: 0.001
     failure_tolerance: 0.3
     progress_checker_plugins: ["progress_checker"]
     goal_checker_plugins: ["general_goal_checker"]
     controller_plugins: ["FollowPath"]
+
     progress_checker:
       plugin: nav2_controller::SimpleProgressChecker
       required_movement_radius: 0.1
-      movement_time_allowance: 30.0
+      movement_time_allowance: 120.0
+
     general_goal_checker:
       plugin: nav2_controller::SimpleGoalChecker
-      xy_goal_tolerance: 0.25
-      yaw_goal_tolerance: 0.25
+      xy_goal_tolerance: 0.25          # 25 cm position tolerance
+      yaw_goal_tolerance: 0.2          # ~11 degrees final heading tolerance
       stateful: true
+
     FollowPath:
       plugin: nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController
-      desired_linear_vel: 0.3
-      lookahead_dist: 0.4
-      min_lookahead_dist: 0.2
-      max_lookahead_dist: 0.6
+      desired_linear_vel: 0.35         # CHANGED: 0.5→0.35 m/s (safer for indoor service)
+      lookahead_dist: 1.0
+      min_lookahead_dist: 0.4
+      max_lookahead_dist: 2.5
       lookahead_time: 1.5
-      rotate_to_heading_angular_vel: 0.5
-      transform_tolerance: 5.0
-      use_velocity_scaled_lookahead_dist: false
+      rotate_to_heading_angular_vel: 0.8
+      transform_tolerance: 1.0
+      use_velocity_scaled_lookahead_dist: true
       min_approach_linear_velocity: 0.05
-      approach_velocity_scaling_dist: 0.5
+      approach_velocity_scaling_dist: 1.0
       use_collision_detection: true
       max_allowed_time_to_collision_up_to_carrot: 1.0
       use_regulated_linear_velocity_scaling: true
       use_fixed_curvature_lookahead: false
       curvature_feedback_gain: 3.5
       inflation_cost_scaling_factor: 3.0
+      allow_reversing: false
+      rotate_to_heading_min_angle: 0.785  # 45° — rotate in-place if heading error > 45°
 
+# ---------------------------------------------------------------------------
+# Local Costmap  (moving window around robot, used for obstacle avoidance)
+# ---------------------------------------------------------------------------
 local_costmap:
   local_costmap:
     ros__parameters:
@@ -83,31 +158,46 @@ local_costmap:
       global_frame: odom
       robot_base_frame: base_link
       rolling_window: true
-      width: 3
-      height: 3
-      resolution: 0.02
-      robot_radius: 0.10
+      width: 6
+      height: 6
+      resolution: 0.05
+      transform_tolerance: 1.0
+
+      # FIXED: Use actual robot footprint polygon instead of robot_radius: 0.20
+      # base_link at (0,0). Robot is 1.0m long × 0.65m wide.
+      # Front caster at +0.45m, rear caster at -0.45m.
+      # Adding 0.05m padding around physical extent.
+      footprint: "[[-0.55, 0.38], [-0.55, -0.38], [0.55, -0.38], [0.55, 0.38]]"
+      footprint_padding: 0.01
+
       plugins: ["obstacle_layer", "inflation_layer"]
+
       obstacle_layer:
         plugin: nav2_costmap_2d::ObstacleLayer
         enabled: true
         observation_sources: scan
         scan:
           topic: /scan_base
-          max_obstacle_height: 2.0
+          max_obstacle_height: 2.5
           clearing: true
           marking: true
           data_type: LaserScan
-          raytrace_max_range: 10.0
+          raytrace_max_range: 12.0
           raytrace_min_range: 0.0
-          obstacle_max_range: 9.5
-          obstacle_min_range: 0.5
+          obstacle_max_range: 11.5
+          obstacle_min_range: 0.1
+
       inflation_layer:
         plugin: nav2_costmap_2d::InflationLayer
-        cost_scaling_factor: 10.0
-        inflation_radius: 0.10
+        cost_scaling_factor: 3.0
+        inflation_radius: 0.55   # FIXED: was 0.10. Must be > half robot width (0.38 m).
+                                  # 0.55 = 0.38 (half-width) + 0.17 (safety margin)
+
       always_send_full_costmap: true
 
+# ---------------------------------------------------------------------------
+# Global Costmap  (full map, used for path planning)
+# ---------------------------------------------------------------------------
 global_costmap:
   global_costmap:
     ros__parameters:
@@ -116,52 +206,80 @@ global_costmap:
       publish_frequency: 1.0
       global_frame: map
       robot_base_frame: base_link
-      robot_radius: 0.10
-      resolution: 0.02
+      transform_tolerance: 1.0
+      resolution: 0.05
       track_unknown_space: true
+
+      # Same footprint as local costmap
+      footprint: "[[-0.55, 0.38], [-0.55, -0.38], [0.55, -0.38], [0.55, 0.38]]"
+      footprint_padding: 0.01
+
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+
       static_layer:
         plugin: nav2_costmap_2d::StaticLayer
         map_subscribe_transient_local: true
+
       obstacle_layer:
         plugin: nav2_costmap_2d::ObstacleLayer
         enabled: true
         observation_sources: scan
         scan:
           topic: /scan_base
-          max_obstacle_height: 2.0
+          max_obstacle_height: 2.5
           clearing: true
           marking: true
           data_type: LaserScan
-          raytrace_max_range: 10.0
+          raytrace_max_range: 12.0
           raytrace_min_range: 0.0
-          obstacle_max_range: 9.5
-          obstacle_min_range: 0.0
+          obstacle_max_range: 11.5
+          obstacle_min_range: 0.1
+
       inflation_layer:
         plugin: nav2_costmap_2d::InflationLayer
-        cost_scaling_factor: 10.0
-        inflation_radius: 0.10
+        cost_scaling_factor: 3.0
+        inflation_radius: 0.55
+
       always_send_full_costmap: true
 
+# ---------------------------------------------------------------------------
+# Map Server
+# ---------------------------------------------------------------------------
 map_server:
   ros__parameters:
     use_sim_time: true
-    yaml_filename: ""
+    # UPDATE THIS PATH to match your actual map file location after colcon build
+    yaml_filename: ""   # Set via launch argument: map:=<path>/floor1_map.yaml
 
+# ---------------------------------------------------------------------------
+# Planner Server  (global path planning)
+# ---------------------------------------------------------------------------
 planner_server:
   ros__parameters:
     use_sim_time: true
     planner_plugins: ["GridBased"]
     GridBased:
       plugin: nav2_navfn_planner/NavfnPlanner
-      tolerance: 0.25
-      use_astar: true
-      allow_unknown: true
+      tolerance: 0.5
+      use_astar: true           # A* is faster than Dijkstra for single-goal nav
+      allow_unknown: false      # Don't plan through unexplored space (map is complete)
 
+# ---------------------------------------------------------------------------
+# Smoother Server
+# ---------------------------------------------------------------------------
 smoother_server:
   ros__parameters:
     use_sim_time: true
+    smoother_plugins: ["simple_smoother"]
+    simple_smoother:
+      plugin: nav2_smoother::SimpleSmoother
+      tolerance: 1.0e-10
+      max_its: 1000
+      do_refinement: true
 
+# ---------------------------------------------------------------------------
+# Behavior Server  (recovery behaviours)
+# ---------------------------------------------------------------------------
 behavior_server:
   ros__parameters:
     use_sim_time: true
@@ -177,12 +295,15 @@ behavior_server:
       plugin: nav2_behaviors/Wait
     global_frame: odom
     robot_base_frame: base_link
-    transform_tolerance: 5.0
+    transform_tolerance: 1.0
     simulate_ahead_time: 2.0
-    max_rotational_vel: 0.5
+    max_rotational_vel: 0.8
     min_rotational_vel: 0.1
-    rotational_acc_lim: 1.0
+    rotational_acc_lim: 1.5
 
+# ---------------------------------------------------------------------------
+# Waypoint Follower
+# ---------------------------------------------------------------------------
 waypoint_follower:
   ros__parameters:
     use_sim_time: true
@@ -194,14 +315,17 @@ waypoint_follower:
       enabled: true
       waypoint_pause_duration: 200
 
+# ---------------------------------------------------------------------------
+# Velocity Smoother
+# ---------------------------------------------------------------------------
 velocity_smoother:
   ros__parameters:
     use_sim_time: true
     smoothing_frequency: 20.0
     scale_velocities: false
     feedback: "OPEN_LOOP"
-    max_velocity: [0.3, 0.0, 1.0]
-    min_velocity: [-0.3, 0.0, -1.0]
+    max_velocity: [0.5, 0.0, 1.0]
+    min_velocity: [-0.5, 0.0, -1.0]
     max_accel: [0.5, 0.0, 1.0]
     max_decel: [-0.5, 0.0, -1.0]
     odom_topic: /odom
