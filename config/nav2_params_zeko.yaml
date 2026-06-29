@@ -24,7 +24,7 @@
 # ---------------------------------------------------------------------------
 amcl:
   ros__parameters:
-    use_sim_time: true
+    use_sim_time: false
 
     # ---- Particle count ----
     min_particles: 500
@@ -83,7 +83,7 @@ amcl:
 # ---------------------------------------------------------------------------
 bt_navigator:
   ros__parameters:
-    use_sim_time: true
+    use_sim_time: false
     global_frame: map
     robot_base_frame: base_link
     odom_topic: /odom
@@ -104,7 +104,7 @@ bt_navigator:
 # ---------------------------------------------------------------------------
 controller_server:
   ros__parameters:
-    use_sim_time: true
+    use_sim_time: false
     controller_frequency: 20.0
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.001   # FIXED: was 0.5 — diff-drive has no lateral velocity
@@ -152,7 +152,7 @@ controller_server:
 local_costmap:
   local_costmap:
     ros__parameters:
-      use_sim_time: true
+      use_sim_time: false
       update_frequency: 5.0
       publish_frequency: 2.0
       global_frame: odom
@@ -177,15 +177,16 @@ local_costmap:
         enabled: true
         observation_sources: scan
         scan:
-          topic: /scan_base
+          topic: /scan   # FIXED: was /scan_base — nothing publishes that topic;
+                          # restamper outputs /scan, same as AMCL's scan_topic.
           max_obstacle_height: 2.5
           clearing: true
           marking: true
           data_type: LaserScan
           raytrace_max_range: 12.0
-          raytrace_min_range: 0.0
+          raytrace_min_range: 0.35  # Exclude robot body returns (LiDAR at z=0.68m, body ~0.3m radius)
           obstacle_max_range: 11.5
-          obstacle_min_range: 0.1
+          obstacle_min_range: 0.35  # Same — don't mark anything closer than robot half-width
 
       inflation_layer:
         plugin: nav2_costmap_2d::InflationLayer
@@ -201,7 +202,7 @@ local_costmap:
 global_costmap:
   global_costmap:
     ros__parameters:
-      use_sim_time: true
+      use_sim_time: false
       update_frequency: 1.0
       publish_frequency: 1.0
       global_frame: map
@@ -214,26 +215,18 @@ global_costmap:
       footprint: "[[-0.55, 0.38], [-0.55, -0.38], [0.55, -0.38], [0.55, 0.38]]"
       footprint_padding: 0.01
 
-      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      # Global costmap: static map + inflation only.
+      # Dynamic obstacles belong in the LOCAL costmap only.
+      # During global localization the map->odom transform is temporarily wrong,
+      # causing scan hits to be placed at incorrect map positions. Those spurious
+      # marks accumulate and never clear. The global planner only needs the static
+      # map to compute a path; the local controller handles dynamic obstacle
+      # avoidance in odom frame.
+      plugins: ["static_layer", "inflation_layer"]
 
       static_layer:
         plugin: nav2_costmap_2d::StaticLayer
         map_subscribe_transient_local: true
-
-      obstacle_layer:
-        plugin: nav2_costmap_2d::ObstacleLayer
-        enabled: true
-        observation_sources: scan
-        scan:
-          topic: /scan_base
-          max_obstacle_height: 2.5
-          clearing: true
-          marking: true
-          data_type: LaserScan
-          raytrace_max_range: 12.0
-          raytrace_min_range: 0.0
-          obstacle_max_range: 11.5
-          obstacle_min_range: 0.1
 
       inflation_layer:
         plugin: nav2_costmap_2d::InflationLayer
@@ -247,7 +240,7 @@ global_costmap:
 # ---------------------------------------------------------------------------
 map_server:
   ros__parameters:
-    use_sim_time: true
+    use_sim_time: false
     # UPDATE THIS PATH to match your actual map file location after colcon build
     yaml_filename: ""   # Set via launch argument: map:=<path>/floor1_map.yaml
 
@@ -256,7 +249,7 @@ map_server:
 # ---------------------------------------------------------------------------
 planner_server:
   ros__parameters:
-    use_sim_time: true
+    use_sim_time: false
     planner_plugins: ["GridBased"]
     GridBased:
       plugin: nav2_navfn_planner/NavfnPlanner
@@ -269,7 +262,7 @@ planner_server:
 # ---------------------------------------------------------------------------
 smoother_server:
   ros__parameters:
-    use_sim_time: true
+    use_sim_time: false
     smoother_plugins: ["simple_smoother"]
     simple_smoother:
       plugin: nav2_smoother::SimpleSmoother
@@ -282,7 +275,7 @@ smoother_server:
 # ---------------------------------------------------------------------------
 behavior_server:
   ros__parameters:
-    use_sim_time: true
+    use_sim_time: false
     costmap_topic: local_costmap/costmap_raw
     footprint_topic: local_costmap/published_footprint
     cycle_frequency: 10.0
@@ -306,7 +299,7 @@ behavior_server:
 # ---------------------------------------------------------------------------
 waypoint_follower:
   ros__parameters:
-    use_sim_time: true
+    use_sim_time: false
     loop_rate: 20
     stop_on_failure: false
     waypoint_task_executor_plugin: wait_at_waypoint
@@ -320,7 +313,7 @@ waypoint_follower:
 # ---------------------------------------------------------------------------
 velocity_smoother:
   ros__parameters:
-    use_sim_time: true
+    use_sim_time: false
     smoothing_frequency: 20.0
     scale_velocities: false
     feedback: "OPEN_LOOP"

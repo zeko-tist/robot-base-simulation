@@ -69,14 +69,19 @@ class GlobalLocalisationTrigger(Node):
         super().__init__("global_localization_trigger")
 
         # ── Parameters ────────────────────────────────────────────────────
-        self.declare_parameter("use_sim_time",                True)
-        self.declare_parameter("covariance_threshold",        0.5)
-        self.declare_parameter("max_wait_for_amcl",           60.0)
-        self.declare_parameter("rotation_speed",              0.3)
-        self.declare_parameter("rotation_duration",           15.0)
-        self.declare_parameter("kidnap_covariance_threshold", 2.0)
-        self.declare_parameter("check_kidnap",                True)
-        self.declare_parameter("kidnap_recheck_interval",     5.0)
+        params = [
+            ("use_sim_time",                True),
+            ("covariance_threshold",        0.5),
+            ("max_wait_for_amcl",           60.0),
+            ("rotation_speed",              0.3),
+            ("rotation_duration",           15.0),
+            ("kidnap_covariance_threshold", 2.0),
+            ("check_kidnap",                True),
+            ("kidnap_recheck_interval",     5.0),
+        ]
+        for name, default in params:
+            if not self.has_parameter(name):
+                self.declare_parameter(name, default)
 
         self._cov_threshold   = self.get_parameter("covariance_threshold").value
         self._max_wait_amcl   = self.get_parameter("max_wait_for_amcl").value
@@ -85,7 +90,7 @@ class GlobalLocalisationTrigger(Node):
         self._kidnap_thresh   = self.get_parameter("kidnap_covariance_threshold").value
         self._check_kidnap    = self.get_parameter("check_kidnap").value
         self._kidnap_interval = self.get_parameter("kidnap_recheck_interval").value
-
+        
         # ── State ─────────────────────────────────────────────────────────
         self._state           = self._STATE_WAITING_FOR_AMCL
         self._latest_pose     = None
@@ -275,7 +280,13 @@ class GlobalLocalisationTrigger(Node):
         # cov[0]  = Var(x)
         # cov[7]  = Var(y)
         # cov[35] = Var(yaw)
-        return math.sqrt(cov[0] ** 2 + cov[7] ** 2)
+        # FIXED: was sqrt(cov[0]**2 + cov[7]**2), which doesn't match the
+        # trace this docstring promises and badly distorts the value right
+        # after a global-localization reset, when variances are large
+        # (uniform spread over a 52x46 m map gives var_x+var_y in the
+        # hundreds). That's almost certainly why convergence appeared to
+        # plateau around ~245 instead of dropping toward the 0.5 threshold.
+        return cov[0] + cov[7]
 
     def _on_global_loc_response(self, future) -> None:
         try:

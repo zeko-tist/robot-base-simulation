@@ -17,7 +17,8 @@ WHAT THIS LAUNCHES
 PREREQUISITES
 -------------
   - Isaac Sim 6.0 running with ZEKO scene loaded
-  - isaac_sim_ros2_bridge.py executed inside Isaac Sim (publishes /odom, /scan_base, /tf, /clock)
+  - isaac_sim_ros2_bridge.py executed inside Isaac Sim (publishes /odom_raw, /scan_raw, /tf_isaac)
+  - isaac_restamper running (republishes wall-clock-stamped /odom, /scan, /tf)
   - ROS2 Humble sourced
   - robot_base_simulation package built: colcon build --packages-select robot_base_simulation
   - Map file at config/maps/floor1_map.yaml (generated from Isaac Sim)
@@ -76,11 +77,13 @@ def generate_launch_description():
     default_rviz_config = os.path.join(nav2_bringup, "rviz", "nav2_default_view.rviz")
 
     # ── Launch arguments ──────────────────────────────────────────────────
-    use_sim_time_arg = DeclareLaunchArgument(
-        "use_sim_time",
-        default_value="true",
-        description="Use simulation clock from Isaac Sim (/clock topic)",
-    )
+    # NOTE: There is no use_sim_time launch arg here on purpose. This whole
+    # stack runs on wall-clock time (use_sim_time: false is hardcoded below
+    # and in nav2_params_zeko.yaml) — that's the fix for the original
+    # TF_OLD_DATA bug. Isaac publishes sim-time data on /odom_raw, /scan_raw,
+    # /tf_isaac; isaac_restamper rewrites it to wall clock before Nav2 ever
+    # sees it. Don't add a use_sim_time:=true path without also wiring a
+    # real /clock source — otherwise it's just a switch that does nothing.
     map_arg = DeclareLaunchArgument(
         "map",
         default_value=default_map_path,
@@ -108,7 +111,6 @@ def generate_launch_description():
     )
 
     # ── Resolved configurations ───────────────────────────────────────────
-    use_sim_time       = LaunchConfiguration("use_sim_time")
     map_path           = LaunchConfiguration("map")
     params_file        = LaunchConfiguration("params_file")
     use_rviz           = LaunchConfiguration("use_rviz")
@@ -131,56 +133,23 @@ def generate_launch_description():
         output="screen",
         parameters=[
             {"robot_description": robot_description},
-            {"use_sim_time": True},
+            {"use_sim_time": False},
             {"publish_frequency": 50.0},    # Hz
-            {"ignore_timestamp": False},
+            {"ignore_timestamp": True},
         ],
     )
 
-    # ── 2. Map server (standalone, outside nav2_bringup) ─────────────────
-    # We launch map_server independently so we can control its lifecycle
-    # without relying on the bringup lifecycle manager for it.
-    map_server = Node(
-        package="nav2_map_server",
-        executable="map_server",
-        name="map_server",
-        output="screen",
-        parameters=[
-            {"use_sim_time": True},
-            {"yaml_filename": map_path},
-            {"topic_name": "map"},
-            {"frame_id": "map"},
-        ],
-    )
 
-    # ── 3. Map server lifecycle manager ──────────────────────────────────
-    map_lifecycle_manager = Node(
-        package="nav2_lifecycle_manager",
-        executable="lifecycle_manager",
-        name="lifecycle_manager_map",
-        output="screen",
-        parameters=[
-            {"use_sim_time": True},
-            {"autostart": True},
-            {"node_names": ["map_server"]},
-        ],
-    )
-
-    # ── 4. Nav2 navigation stack (includes AMCL + all planners) ──────────
-    # nav2_bringup's navigation_launch.py starts:
-    #   amcl, controller_server, planner_server, bt_navigator,
-    #   behavior_server, waypoint_follower, velocity_smoother,
-    #   lifecycle_manager_navigation
+    # ── Nav2 full stack (map server + AMCL + planners + controllers) ─────
     nav2_stack = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(nav2_bringup, "launch", "navigation_launch.py")
+            os.path.join(nav2_bringup, "launch", "bringup_launch.py")
         ),
         launch_arguments={
-            "use_sim_time":  "true",
-            "map":           map_path,
-            "params_file":   params_file,
-            "autostart":     autostart,
-            # Do NOT use_composition here — simpler debugging without composing
+            "use_sim_time": "false",
+            "map":          map_path,
+            "params_file":  params_file,
+            "autostart":    autostart,
         }.items(),
     )
 
@@ -193,16 +162,25 @@ def generate_launch_description():
         name="global_localization_trigger",
         output="screen",
         parameters=[
-            {"use_sim_time": True},
+            {"use_sim_time": False},
             {"covariance_threshold":        0.5},
             {"max_wait_for_amcl":           90.0},   # s (AMCL takes time to become active)
             {"rotation_speed":              0.3},    # rad/s — slow spin for convergence
             {"rotation_duration":           12.0},   # s
-            {"check_kidnap":                True},
+            {"check_kidnap":                False},  # Disabled: triggers during normal nav motion
             {"kidnap_covariance_threshold": 2.0},
             {"kidnap_recheck_interval":     5.0},
         ],
         condition=IfCondition(use_global_loc),
+    )
+    
+    
+    # ── Isaac timestamp restamper ───────────────────────────────────────────
+    restamper = Node(
+        package="robot_base_simulation",
+        executable="isaac_restamper",
+        name="isaac_restamper",
+        output="screen",
     )
 
     # ── 6. RViz2 ─────────────────────────────────────────────────────────
@@ -212,7 +190,7 @@ def generate_launch_description():
         name="rviz2",
         output="screen",
         arguments=["-d", default_rviz_config],
-        parameters=[{"use_sim_time": True}],
+        parameters=[{"use_sim_time": False}],
         condition=IfCondition(use_rviz),
     )
 
@@ -229,7 +207,7 @@ def generate_launch_description():
         "  4. Confirm TF: ros2 run tf2_tools view_frames\n"
         "\n"
         " Autonomy pipeline:\n"
-        "  /scan_base + /odom → AMCL → map→odom TF → Nav2 → /cmd_vel\n"
+        "  /scan + /odom → AMCL → map→odom TF → Nav2 → /cmd_vel\n"
         "  /cmd_vel → ZEKO extension → wheels → physics\n"
         "\n"
         " To send a goal via CLI:\n"
@@ -241,7 +219,6 @@ def generate_launch_description():
     # ── Launch description ────────────────────────────────────────────────
     return LaunchDescription([
         # Arguments
-        use_sim_time_arg,
         map_arg,
         params_arg,
         use_rviz_arg,
@@ -253,8 +230,7 @@ def generate_launch_description():
 
         # Nodes (order matters: RSP first, then map, then Nav2)
         robot_state_publisher,
-        map_server,
-        map_lifecycle_manager,
+        restamper,          # Must start before Nav2 so /tf /scan /odom are live when Nav2 initialises
         nav2_stack,
         global_loc_node,
         rviz,
